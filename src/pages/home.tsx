@@ -31,7 +31,8 @@ export default function Home() {
         </div>
         <Titre 
           texteNormal="Bienvenue"
-          texteGras={`${prenom}, prêt à covoiturer ?`}
+          texteGras={prenom}
+          texteNormal2=", prêt à covoiturer ?"
         />
         <div className="flex justify-center">
           <ImageComponent 
@@ -42,7 +43,7 @@ export default function Home() {
             className="w-full max-w-md"
           />
         </div>
-        <div className="space-y-4">
+        <div className="space-y-8">
           <Button
             text="Trouver un trajet"
             variant="primary"

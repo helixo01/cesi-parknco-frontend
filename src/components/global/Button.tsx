@@ -43,7 +43,7 @@ export const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={`
-        w-full py-2 px-4 rounded-lg font-medium
+        w-full h-[50px] rounded-3xl font-medium
         transition-colors duration-200
         focus:outline-none focus:ring-2 focus:ring-offset-2
         disabled:opacity-50 disabled:cursor-not-allowed
