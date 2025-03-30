@@ -89,5 +89,15 @@ export const colors = {
         success: "#A7F3D0",
       },
     },
+    // SettingsItem
+    settingsItem: {
+      background: "#316285",
+      hover: "#F9FAFB",
+      icon: {
+        background: "#0D1A2A",
+        color: "#B3EBFF",
+      },
+      text: "#FFFFFF",
+    },
   },
 } as const; 

@@ -1,14 +1,14 @@
 import React from "react";
 import { colors } from "@/styles/colors";
 
-interface TitreProps {
+interface TitleProps {
   texteNormal: string;
   texteGras: string;
   texteNormal2?: string;
   className?: string;
 }
 
-export const Titre: React.FC<TitreProps> = ({ 
+export const Title: React.FC<TitleProps> = ({ 
   texteNormal, 
   texteGras, 
   texteNormal2 = "",

@@ -1,7 +1,8 @@
+import React from "react";
 import { Logo } from "@/components/global/Logo";
 import { Button } from "@/components/global/Button";
 import { NavBar } from "@/components/global/NavBar";
-import { Titre } from "@/components/global/Titre";
+import { Title } from "@/components/global/Title";
 import { ImageComponent } from "@/components/global/Image";
 import { colors } from "@/styles/colors";
 import { useEffect, useState } from "react";
@@ -29,7 +30,7 @@ export default function Home() {
         <div className="flex justify-center">
           <Logo width={175} height={175} shape="circle" />
         </div>
-        <Titre 
+        <Title 
           texteNormal="Bienvenue"
           texteGras={prenom}
           texteNormal2=", prêt à covoiturer ?"
