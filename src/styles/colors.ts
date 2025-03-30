@@ -99,5 +99,11 @@ export const colors = {
       },
       text: "#FFFFFF",
     },
+    header: {
+      arrow: "#FFFFFF",
+    },
+    logo: {
+      background: "#0D1A2A",
+    },
   },
 } as const; 

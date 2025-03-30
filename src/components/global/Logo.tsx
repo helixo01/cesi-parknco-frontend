@@ -1,34 +1,46 @@
 import React from "react";
 import Image from "next/image";
+import { colors } from "@/styles/colors";
 
 interface LogoProps {
   width?: number;
   height?: number;
-  className?: string;
-  shape?: "rectangle" | "circle";
+  shape?: "circle" | "rectangle" | "square";
 }
 
 export const Logo: React.FC<LogoProps> = ({
   width = 150,
-  height = 50,
-  className = "",
-  shape = "rectangle",
+  height = 150,
+  shape = "circle",
 }) => {
+  const getBorderRadius = () => {
+    switch (shape) {
+      case "circle":
+        return "rounded-full";
+      case "square":
+        return "rounded-lg";
+      case "rectangle":
+        return "rounded-xl";
+      default:
+        return "rounded-full";
+    }
+  };
+
   return (
-    <div 
-      className={`
-        ${shape === "circle" ? "rounded-full overflow-hidden aspect-square" : ""} 
-        ${className}
-      `}
-      style={shape === "circle" ? { width: width, height: width } : undefined}
+    <div
+      className={`relative overflow-hidden ${getBorderRadius()}`}
+      style={{
+        width: `${width}px`,
+        height: `${height}px`,
+        backgroundColor: colors.components.logo.background,
+      }}
     >
       <Image
         src="/logo.jpg"
-        alt="ParknCo Logo"
-        width={width}
-        height={shape === "circle" ? width : height}
+        alt="Logo ParknCo"
+        fill
+        style={{ objectFit: "contain" }}
         priority
-        className={shape === "circle" ? "object-cover w-full h-full" : ""}
       />
     </div>
   );

@@ -7,9 +7,11 @@ import { ImageComponent } from "@/components/global/Image";
 import { colors } from "@/styles/colors";
 import { useEffect, useState } from "react";
 import { userService } from "@/services/userService";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [prenom, setPrenom] = useState<string>("");
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -53,7 +55,7 @@ export default function Home() {
           <Button
             text="Proposer un trajet"
             variant="primary"
-            onClick={() => {}}
+            onClick={() => router.push("/add-trip")}
           />
         </div>
       </div>
