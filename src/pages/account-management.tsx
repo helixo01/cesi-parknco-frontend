@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { NavBar } from "@/components/global/NavBar";
 import { Title } from "@/components/global/Title";
 import { colors } from "@/styles/colors";
-import { FiArrowLeft, FiShield, FiTrash2, FiAlertCircle } from "react-icons/fi";
+import { FiArrowLeft, FiShield, FiTrash2, FiAlertCircle, FiLogOut } from "react-icons/fi";
 
 export default function AccountManagement() {
   const router = useRouter();
@@ -112,9 +112,9 @@ export default function AccountManagement() {
 
           {/* Delete Account */}
           <div 
-            className="p-6 rounded-lg border border-red-200 space-y-4"
+            className="p-6 rounded-lg shadow-lg space-y-4"
             style={{ 
-              background: 'rgba(254, 226, 226, 0.5)',
+              background: `linear-gradient(135deg, ${colors.primary.main}05, ${colors.primary.light}15)`,
               backdropFilter: 'blur(10px)',
             }}
           >
@@ -165,6 +165,35 @@ export default function AccountManagement() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Logout */}
+          <div 
+            className="p-6 rounded-lg shadow-lg space-y-4"
+            style={{ 
+              background: `linear-gradient(135deg, ${colors.primary.main}05, ${colors.primary.light}15)`,
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <div className="flex items-start gap-3">
+              <FiLogOut className="text-gray-600 mt-1" size={24} />
+              <div>
+                <h3 className="font-medium text-gray-800">Déconnexion</h3>
+                <p className="text-sm text-gray-600">
+                  Se déconnecter de l'application
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                // Here you would typically clear the session/tokens
+                router.push('/login');
+              }}
+              className="w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Se déconnecter
+            </button>
           </div>
         </div>
       </div>

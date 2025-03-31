@@ -6,6 +6,7 @@ import { ProfilPic } from "@/components/global/ProfilPic";
 import { SettingsItem } from "@/components/global/SettingsItem";
 import { colors } from "@/styles/colors";
 import { AiOutlineUser, AiOutlineCar, AiOutlineStar, AiOutlineClockCircle, AiOutlineMessage, AiOutlineSafety, AiOutlineSetting } from "react-icons/ai";
+import { AiFillEnvironment } from "react-icons/ai";
 
 export default function Profile() {
   const router = useRouter();
@@ -29,6 +30,18 @@ export default function Profile() {
               >
                 Modifier
               </button>
+            </div>
+            {/* Badge */}
+            <div 
+              className="absolute -bottom-2 -right-2 w-12 h-12 rounded-full shadow-lg flex items-center justify-center cursor-pointer"
+              style={{ 
+                backgroundColor: '#22c55e', // green-500
+                color: 'white',
+              }}
+              onClick={() => router.push('/stats-info')}
+              title="Badge Éco-responsable - 10 trajets effectués"
+            >
+              <AiFillEnvironment size={24} />
             </div>
           </div>
         </div>

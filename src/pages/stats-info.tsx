@@ -2,9 +2,9 @@ import React from "react";
 import { NavBar } from "@/components/global/NavBar";
 import { Title } from "@/components/global/Title";
 import { colors } from "@/styles/colors";
-import { AiOutlineCar, AiOutlineUser, AiOutlineTrophy, AiFillEnvironment } from "react-icons/ai";
+import { AiOutlineCar, AiOutlineUser, AiOutlineTrophy, AiFillEnvironment, AiOutlineStar } from "react-icons/ai";
 import { useRouter } from "next/router";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiAward } from "react-icons/fi";
 
 interface StatCard {
   icon: React.ReactNode;
@@ -85,6 +85,64 @@ export default function StatsInfo() {
               {stat.subtitle && <p className="text-sm text-gray-500">{stat.subtitle}</p>}
             </div>
           ))}
+        </div>
+
+        {/* Badges Section */}
+        <div 
+          className="rounded-lg p-6 shadow-lg space-y-6"
+          style={{ 
+            background: `linear-gradient(135deg, ${colors.primary.main}05, ${colors.primary.light}15)`,
+            backdropFilter: 'blur(10px)',
+          }}
+        >
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: colors.primary.main }}>
+              <FiAward /> Badges
+            </h3>
+            
+            {/* Current Badge */}
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-white bg-opacity-70">
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center shadow-md"
+                style={{ 
+                  backgroundColor: '#22c55e', 
+                  color: 'white',
+                }}
+              >
+                <AiFillEnvironment size={32} />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-gray-900">Éco-responsable</h4>
+                <p className="text-sm font-medium text-gray-700">10 trajets effectués</p>
+              </div>
+            </div>
+
+            {/* Next Badge */}
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium text-gray-700">Prochain objectif</h4>
+              <div className="p-4 rounded-lg bg-white bg-opacity-50 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="w-12 h-12 rounded-full flex items-center justify-center"
+                    style={{ 
+                      backgroundColor: 'rgba(234, 179, 8, 0.2)', 
+                      color: '#ca8a04', 
+                    }}
+                  >
+                    <AiOutlineStar size={24} />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Super Covoitureur</h4>
+                    <p className="text-sm font-medium text-gray-700">25 trajets effectués</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-yellow-600">42%</p>
+                  <p className="text-sm font-medium text-gray-700">17 restants</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div 

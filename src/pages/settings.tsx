@@ -70,9 +70,6 @@ export default function Settings() {
 
   const languages = [
     { code: "fr", name: "Français" },
-    { code: "en", name: "English" },
-    { code: "es", name: "Español" },
-    { code: "de", name: "Deutsch" },
   ];
 
   const toggleSetting = (category: keyof SettingsType, id: string) => {

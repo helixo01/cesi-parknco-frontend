@@ -3,20 +3,23 @@ import { useRouter } from "next/router";
 import { NavBar } from "@/components/global/NavBar";
 import { Title } from "@/components/global/Title";
 import { colors } from "@/styles/colors";
-import { FiArrowLeft, FiCheck, FiX, FiEdit2 } from "react-icons/fi";
+import { FiArrowLeft, FiCheck, FiX, FiEdit2, FiUpload } from "react-icons/fi";
+import { BiUser } from "react-icons/bi";
 
 export default function PersonalInfo() {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     firstName: "John",
     lastName: "Doe",
-    email: "john.doe@example.com",
+    email: "john.doe@viacesi.fr",
     phone: "06 12 34 56 78",
     education: {
-      type: "CESI",
-      year: "2024",
-      specialty: "Informatique",
+      type: "Personnel",
+      year: "",
+      specialty: "",
     },
     customEducation: "",
   });
@@ -24,9 +27,22 @@ export default function PersonalInfo() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [tempData, setTempData] = useState({ ...formData });
 
-  const educationTypes = ["CESI", "Université", "École d'ingénieur", "BTS", "DUT", "Autre"];
-  const specialties = ["Informatique", "Mécanique", "Électronique", "Génie civil", "Commerce", "Autre"];
-  const years = Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() - 5 + i).toString());
+  const educationTypes = ["Personnel", "Master", "CPE", "FISE", "FISA"];
+  const specialties = ["informatique", "btp", "généraliste"];
+  const years = {
+    "Personnel": [],
+    "Master": ["1", "2", "3", "4", "5"],
+    "CPE": ["1", "2"],
+    "FISE": ["3", "4", "5"],
+    "FISA": ["3", "4", "5"]
+  };
+
+  const canSelectSpecialty = (type: string, year: string) => {
+    if (type === "Personnel") return false;
+    if (type === "CPE" && year === "1") return false;
+    if (["Master", "CPE", "FISE", "FISA"].includes(type) && year !== "1") return true;
+    return false;
+  };
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -56,8 +72,13 @@ export default function PersonalInfo() {
   };
 
   const handleEdit = () => {
-    setTempData({ ...formData });
     setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setSelectedFile(null);
+    setPreviewUrl(null);
   };
 
   const handleSave = () => {
@@ -68,10 +89,17 @@ export default function PersonalInfo() {
     }
   };
 
-  const handleCancel = () => {
-    setTempData({ ...formData });
-    setIsEditing(false);
-    setErrors({});
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Le fichier est trop volumineux. Taille maximum : 5 Mo');
+        return;
+      }
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -194,6 +222,51 @@ export default function PersonalInfo() {
             </button>
           )}
 
+          {/* Profile Picture Section */}
+          <div className="flex flex-col items-center space-y-4 pb-6 border-b border-gray-200">
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full overflow-hidden bg-white shadow-lg border-2 border-white">
+                {previewUrl ? (
+                  <img 
+                    src={previewUrl} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                    <BiUser size={48} className="text-gray-400" />
+                  </div>
+                )}
+              </div>
+              {isEditing && (
+                <div className="absolute -bottom-2 -right-2">
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    id="profile-picture-input"
+                  />
+                  <button
+                    onClick={() => {
+                      const input = document.getElementById('profile-picture-input') as HTMLInputElement;
+                      if (input) input.click();
+                    }}
+                    className="w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-transform duration-300 hover:scale-110"
+                    style={{ backgroundColor: colors.primary.main }}
+                  >
+                    <FiUpload className="text-white" size={18} />
+                  </button>
+                </div>
+              )}
+            </div>
+            {isEditing && selectedFile && (
+              <p className="text-sm text-gray-600">
+                Photo sélectionnée : {selectedFile.name}
+              </p>
+            )}
+          </div>
+
           <div className="space-y-6">
             <FormField
               label="Prénom"
@@ -226,50 +299,61 @@ export default function PersonalInfo() {
             />
 
             <div className="space-y-4">
-              <h3 className="text-gray-600 font-medium">Formation</h3>
+              
               <div className="space-y-4">
                 <FormField
-                  label="Type"
+                  label="Type de formation"
                   value={tempData.education.type}
+                  onChange={(value) => {
+                    handleEducationChange("type", value);
+                    handleEducationChange("year", "");
+                    handleEducationChange("specialty", "");
+                  }}
                   options={educationTypes}
-                  onChange={(value) => handleEducationChange("type", value)}
-                  showCustomField={true}
-                  customValue={tempData.customEducation}
-                  onCustomChange={(value) => handleChange("customEducation", value)}
-                  error={errors.customEducation}
                 />
 
-                <FormField
-                  label="Année"
-                  value={tempData.education.year}
-                  options={years}
-                  onChange={(value) => handleEducationChange("year", value)}
-                />
+                {tempData.education.type !== "Personnel" && (
+                  <FormField
+                    label="Année"
+                    value={tempData.education.year}
+                    onChange={(value) => {
+                      handleEducationChange("year", value);
+                      if (!canSelectSpecialty(tempData.education.type, value)) {
+                        handleEducationChange("specialty", "");
+                      }
+                    }}
+                    options={years[tempData.education.type as keyof typeof years]}
+                  />
+                )}
 
-                <FormField
-                  label="Spécialité"
-                  value={tempData.education.specialty}
-                  options={specialties}
-                  onChange={(value) => handleEducationChange("specialty", value)}
-                />
+                {canSelectSpecialty(tempData.education.type, tempData.education.year) && (
+                  <FormField
+                    label="Spécialité"
+                    value={tempData.education.specialty}
+                    onChange={(value) => handleEducationChange("specialty", value)}
+                    options={specialties}
+                  />
+                )}
               </div>
             </div>
           </div>
 
           {isEditing && (
-            <div className="flex justify-end space-x-4 mt-6 pt-4 border-t border-gray-200 border-opacity-50">
+            <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
               <button
                 onClick={handleCancel}
-                className="flex items-center px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+                className="px-4 py-2 rounded-lg flex items-center gap-2 text-gray-700 hover:bg-gray-100 transition-colors duration-300"
               >
-                <FiX className="mr-2" /> Annuler
+                <FiX size={20} />
+                Annuler
               </button>
               <button
                 onClick={handleSave}
-                className="flex items-center px-4 py-2 rounded-md text-white transition-all duration-300"
+                className="px-4 py-2 rounded-lg flex items-center gap-2 text-white transition-colors duration-300"
                 style={{ backgroundColor: colors.primary.main }}
               >
-                <FiCheck className="mr-2" /> Enregistrer
+                <FiCheck size={20} />
+                Enregistrer
               </button>
             </div>
           )}

@@ -1,8 +1,9 @@
 import React from "react";
+import { useRouter } from "next/router";
 import { NavBar } from "@/components/global/NavBar";
 import { Title } from "@/components/global/Title";
 import { colors } from "@/styles/colors";
-import { FiClock, FiCheck, FiX, FiAlertCircle, FiMapPin, FiUser } from "react-icons/fi";
+import { FiClock, FiCheck, FiX, FiAlertCircle, FiMapPin, FiUser, FiArrowLeft } from "react-icons/fi";
 
 interface Reservation {
   id: string;
@@ -15,6 +16,7 @@ interface Reservation {
 }
 
 export default function ReservationsInfo() {
+  const router = useRouter();
   const reservations: Reservation[] = [
     {
       id: "1",
@@ -111,7 +113,15 @@ export default function ReservationsInfo() {
         backgroundImage: `linear-gradient(to bottom right, ${colors.primary.light}20, ${colors.primary.light}05)`
       }}
     >
-      <div className="w-full max-w-md mx-auto space-y-8">
+      <div className="w-full max-w-2xl mx-auto space-y-8">
+        <button
+          onClick={() => router.push('/profile')}
+          className="flex items-center justify-center w-10 h-10 rounded-full text-white transition-transform duration-300 hover:scale-110"
+          style={{ backgroundColor: colors.primary.main }}
+        >
+          <FiArrowLeft size={20} />
+        </button>
+
         <Title texteNormal="Mes" texteGras="Réservations" />
         
         <div className="space-y-4">
