@@ -61,7 +61,7 @@ export default function Login() {
             <HelpText
               text="Pas encore inscrit ?"
               linkText="Créez un compte ici"
-              linkHref="/register"
+              linkHref="/inscription"
             />
             <HelpText
               text="Un autre soucis ?"
