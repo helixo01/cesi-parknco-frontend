@@ -1,14 +1,15 @@
-import React from "react";
-import { useRouter } from "next/router";
-import { ProfilPic } from "@/components/global/ProfilPic";
+import React from 'react';
+import { useRouter } from 'next/router';
 import { NavBar } from "@/components/global/NavBar";
 import { Title } from "@/components/global/Title";
+import { ProfilPic } from "@/components/global/ProfilPic";
 import { SettingsItem } from "@/components/global/SettingsItem";
 import { colors } from "@/styles/colors";
 import { AiOutlineUser, AiOutlineCar, AiOutlineStar, AiOutlineClockCircle, AiOutlineMessage, AiOutlineSafety, AiOutlineSetting } from "react-icons/ai";
 
 export default function Profile() {
   const router = useRouter();
+  
   return (
     <div 
       className="min-h-screen flex flex-col p-4 pb-20" 
@@ -22,13 +23,18 @@ export default function Profile() {
           <div className="relative group">
             <ProfilPic width={150} height={150} shape="circle" />
             <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-              <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <button 
+                className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-primary-600 px-4 py-2 rounded-full text-sm font-medium"
+                onClick={() => router.push('/personal-info')}
+              >
                 Modifier
-              </span>
+              </button>
             </div>
           </div>
         </div>
+
         <Title texteNormal="Mon" texteGras="Profil" />
+
         <div className="space-y-4">
           <SettingsItem
             icon={AiOutlineUser}

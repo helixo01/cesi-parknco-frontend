@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { NavBar } from "@/components/global/NavBar";
 import { Title } from "@/components/global/Title";
 import { colors } from "@/styles/colors";
-import { FiEdit2, FiCheck, FiX, FiUpload, FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiCheck, FiX, FiEdit2 } from "react-icons/fi";
 
 export default function PersonalInfo() {
   const router = useRouter();
@@ -12,26 +12,151 @@ export default function PersonalInfo() {
     firstName: "John",
     lastName: "Doe",
     email: "john.doe@example.com",
-    promotion: "4ème année",
-    phone: "+33 6 12 34 56 78",
-    profilePicture: "",
+    phone: "06 12 34 56 78",
+    education: {
+      type: "CESI",
+      year: "2024",
+      specialty: "Informatique",
+    },
+    customEducation: "",
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [tempData, setTempData] = useState({ ...formData });
+
+  const educationTypes = ["CESI", "Université", "École d'ingénieur", "BTS", "DUT", "Autre"];
+  const specialties = ["Informatique", "Mécanique", "Électronique", "Génie civil", "Commerce", "Autre"];
+  const years = Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() - 5 + i).toString());
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!/^[A-Za-zÀ-ÿ\s-]{2,}$/.test(tempData.firstName)) {
+      newErrors.firstName = "Le prénom doit contenir au moins 2 caractères et ne pas contenir de chiffres";
+    }
+
+    if (!/^[A-Za-zÀ-ÿ\s-]{2,}$/.test(tempData.lastName)) {
+      newErrors.lastName = "Le nom doit contenir au moins 2 caractères et ne pas contenir de chiffres";
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(tempData.email)) {
+      newErrors.email = "L'email n'est pas valide";
+    }
+
+    if (!/^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/.test(tempData.phone)) {
+      newErrors.phone = "Le numéro de téléphone n'est pas valide (format français)";
+    }
+
+    if (tempData.education.type === "Autre" && !tempData.customEducation) {
+      newErrors.customEducation = "Veuillez préciser votre type d'éducation";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleEdit = () => {
+    setTempData({ ...formData });
     setIsEditing(true);
   };
 
   const handleSave = () => {
-    setIsEditing(false);
+    if (validateForm()) {
+      setFormData({ ...tempData });
+      setIsEditing(false);
+      setErrors({});
+    }
   };
 
   const handleCancel = () => {
+    setTempData({ ...formData });
     setIsEditing(false);
+    setErrors({});
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleChange = (field: string, value: string) => {
+    setTempData(prev => ({
+      ...prev,
+      [field]: value,
+    }));
   };
+
+  const handleEducationChange = (field: string, value: string) => {
+    setTempData(prev => ({
+      ...prev,
+      education: {
+        ...prev.education,
+        [field]: value,
+      },
+    }));
+  };
+
+  const FormField = ({ 
+    label, 
+    value, 
+    error, 
+    type = "text",
+    onChange,
+    options,
+    showCustomField = false,
+    customValue = "",
+    onCustomChange,
+  }: { 
+    label: string;
+    value: string;
+    error?: string;
+    type?: string;
+    onChange: (value: string) => void;
+    options?: string[];
+    showCustomField?: boolean;
+    customValue?: string;
+    onCustomChange?: (value: string) => void;
+  }) => (
+    <div className="space-y-2">
+      <label className="text-gray-600 font-medium">{label}</label>
+      {isEditing ? (
+        <div className="space-y-2">
+          {options ? (
+            <select
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              className="w-full p-2 rounded-md bg-white focus:outline-none focus:ring-2 transition-all duration-300"
+              style={{ borderColor: error ? "red" : colors.primary.main }}
+            >
+              {options.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type={type}
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              className="w-full p-2 rounded-md bg-white focus:outline-none focus:ring-2 transition-all duration-300"
+              style={{ borderColor: error ? "red" : colors.primary.main }}
+            />
+          )}
+          {showCustomField && value === "Autre" && onCustomChange && (
+            <input
+              type="text"
+              value={customValue}
+              onChange={(e) => onCustomChange(e.target.value)}
+              placeholder="Précisez..."
+              className="w-full p-2 rounded-md bg-white focus:outline-none focus:ring-2 transition-all duration-300"
+              style={{ borderColor: error ? "red" : colors.primary.main }}
+            />
+          )}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+        </div>
+      ) : (
+        <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-70">
+          {value === "Autre" ? customValue : value}
+        </p>
+      )}
+    </div>
+  );
 
   return (
     <div 
@@ -50,7 +175,7 @@ export default function PersonalInfo() {
           <FiArrowLeft size={20} />
         </button>
 
-        <Title texteNormal="Informations" texteGras="Personnelles" />
+        <Title texteNormal="Mes" texteGras="Informations" />
         
         <div 
           className="rounded-lg p-6 shadow-lg space-y-6 relative"
@@ -68,147 +193,66 @@ export default function PersonalInfo() {
               <FiEdit2 size={20} />
             </button>
           )}
-          
-          <div className="flex justify-center mb-6">
-            <div className="relative group">
-              <div 
-                className="w-24 h-24 rounded-full overflow-hidden border-2 flex items-center justify-center"
-                style={{ 
-                  borderColor: colors.primary.main,
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                }}
-              >
-                {formData.profilePicture ? (
-                  <img 
-                    src={formData.profilePicture} 
-                    alt="Profile" 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div 
-                    className="text-4xl font-semibold"
-                    style={{ color: colors.primary.main }}
-                  >
-                    {formData.firstName[0]}{formData.lastName[0]}
-                  </div>
-                )}
+
+          <div className="space-y-6">
+            <FormField
+              label="Prénom"
+              value={tempData.firstName}
+              error={errors.firstName}
+              onChange={(value) => handleChange("firstName", value)}
+            />
+
+            <FormField
+              label="Nom"
+              value={tempData.lastName}
+              error={errors.lastName}
+              onChange={(value) => handleChange("lastName", value)}
+            />
+
+            <FormField
+              label="Email"
+              value={tempData.email}
+              error={errors.email}
+              type="email"
+              onChange={(value) => handleChange("email", value)}
+            />
+
+            <FormField
+              label="Téléphone"
+              value={tempData.phone}
+              error={errors.phone}
+              type="tel"
+              onChange={(value) => handleChange("phone", value)}
+            />
+
+            <div className="space-y-4">
+              <h3 className="text-gray-600 font-medium">Formation</h3>
+              <div className="space-y-4">
+                <FormField
+                  label="Type"
+                  value={tempData.education.type}
+                  options={educationTypes}
+                  onChange={(value) => handleEducationChange("type", value)}
+                  showCustomField={true}
+                  customValue={tempData.customEducation}
+                  onCustomChange={(value) => handleChange("customEducation", value)}
+                  error={errors.customEducation}
+                />
+
+                <FormField
+                  label="Année"
+                  value={tempData.education.year}
+                  options={years}
+                  onChange={(value) => handleEducationChange("year", value)}
+                />
+
+                <FormField
+                  label="Spécialité"
+                  value={tempData.education.specialty}
+                  options={specialties}
+                  onChange={(value) => handleEducationChange("specialty", value)}
+                />
               </div>
-              {isEditing && (
-                <label 
-                  htmlFor="profile-picture"
-                  className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-full cursor-pointer"
-                >
-                  <FiUpload className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={24} />
-                  <input
-                    id="profile-picture"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          handleInputChange("profilePicture", reader.result as string);
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                  />
-                </label>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-gray-600 font-medium">Nom</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={formData.lastName}
-                  onChange={(e) => handleInputChange("lastName", e.target.value)}
-                  className="w-full p-2 rounded-md bg-white focus:outline-none focus:ring-2 transition-all duration-300"
-                  style={{ 
-                    borderColor: colors.primary.main,
-                    color: colors.text.primary
-                  }}
-                />
-              ) : (
-                <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-50">{formData.lastName}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-gray-600 font-medium">Prénom</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={formData.firstName}
-                  onChange={(e) => handleInputChange("firstName", e.target.value)}
-                  className="w-full p-2 rounded-md bg-white focus:outline-none focus:ring-2 transition-all duration-300"
-                  style={{ 
-                    borderColor: colors.primary.main,
-                    color: colors.text.primary
-                  }}
-                />
-              ) : (
-                <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-50">{formData.firstName}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-gray-600 font-medium">Email</label>
-              {isEditing ? (
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
-                  className="w-full p-2 rounded-md bg-white focus:outline-none focus:ring-2 transition-all duration-300"
-                  style={{ 
-                    borderColor: colors.primary.main,
-                    color: colors.text.primary
-                  }}
-                />
-              ) : (
-                <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-50">{formData.email}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-gray-600 font-medium">Promotion/Service</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={formData.promotion}
-                  onChange={(e) => handleInputChange("promotion", e.target.value)}
-                  className="w-full p-2 rounded-md bg-white focus:outline-none focus:ring-2 transition-all duration-300"
-                  style={{ 
-                    borderColor: colors.primary.main,
-                    color: colors.text.primary
-                  }}
-                />
-              ) : (
-                <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-50">{formData.promotion}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-gray-600 font-medium">Téléphone</label>
-              {isEditing ? (
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
-                  className="w-full p-2 rounded-md bg-white focus:outline-none focus:ring-2 transition-all duration-300"
-                  style={{ 
-                    borderColor: colors.primary.main,
-                    color: colors.text.primary
-                  }}
-                />
-              ) : (
-                <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-50">{formData.phone}</p>
-              )}
             </div>
           </div>
 
