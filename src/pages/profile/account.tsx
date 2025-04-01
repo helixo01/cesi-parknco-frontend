@@ -53,15 +53,16 @@ export default function AccountManagement() {
       }}
     >
       <div className="w-full max-w-md mx-auto space-y-8">
-        <button
-          onClick={() => router.push('/profile')}
-          className="flex items-center justify-center w-10 h-10 rounded-full text-white transition-transform duration-300 hover:scale-110"
-          style={{ backgroundColor: colors.primary.main }}
-        >
-          <FiArrowLeft size={20} />
-        </button>
-
-        <Title texteNormal="Gestion du" texteGras="Compte" />
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push('/profile')}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <FiArrowLeft size={24} color={colors.primary.main} />
+          </button>
+          <Title texteNormal="Gestion du" texteGras="compte" />
+          <div className="w-10" /> {/* Espaceur pour maintenir l'alignement */}
+        </div>
 
         <div className="space-y-6">
           {/* Account Status */}
@@ -85,25 +86,25 @@ export default function AccountManagement() {
           <div 
             className="p-6 rounded-lg shadow-lg space-y-6"
             style={{ 
-              background: `linear-gradient(135deg, ${colors.primary.main}05, ${colors.primary.light}15)`,
+              background: `linear-gradient(135deg, ${colors.primary.main}15, ${colors.primary.light}30)`,
               backdropFilter: 'blur(10px)',
             }}
           >
-            <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
               <FiShield /> Sécurité du compte
             </h2>
             
             <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-white bg-opacity-50">
-                <h3 className="font-medium text-gray-800">Dernière connexion</h3>
-                <p className="text-sm text-gray-600">
+              <div className="p-4 rounded-lg bg-white">
+                <h3 className="font-medium text-white">Dernière connexion</h3>
+                <p className="text-sm text-gray-700">
                   {new Date().toLocaleString()}
                 </p>
               </div>
 
-              <div className="p-4 rounded-lg bg-white bg-opacity-50">
-                <h3 className="font-medium text-gray-800">Appareil</h3>
-                <p className="text-sm text-gray-600">
+              <div className="p-4 rounded-lg bg-white">
+                <h3 className="font-medium text-white">Appareil</h3>
+                <p className="text-sm text-gray-700">
                   {navigator.userAgent}
                 </p>
               </div>
@@ -114,14 +115,14 @@ export default function AccountManagement() {
           <div 
             className="p-6 rounded-lg shadow-lg space-y-4"
             style={{ 
-              background: `linear-gradient(135deg, ${colors.primary.main}05, ${colors.primary.light}15)`,
+              background: `linear-gradient(135deg, ${colors.primary.main}15, ${colors.primary.light}30)`,
               backdropFilter: 'blur(10px)',
             }}
           >
             <div className="flex items-start gap-3">
               <FiTrash2 className="text-red-500 mt-1" size={24} />
               <div>
-                <h3 className="font-medium text-red-700">Supprimer le compte</h3>
+                <h3 className="font-medium text-white">Supprimer le compte</h3>
                 <p className="text-sm text-gray-600">
                   Cette action est irréversible. Toutes vos données seront supprimées conformément au RGPD.
                 </p>
@@ -148,7 +149,8 @@ export default function AccountManagement() {
                 <div className="flex gap-4">
                   <button
                     onClick={() => setShowDeleteConfirm(false)}
-                    className="flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="flex-1 py-2 px-4 text-white rounded-lg transition-colors"
+                    style={{ backgroundColor: '#ef4444' }}
                   >
                     Annuler
                   </button>
@@ -171,15 +173,15 @@ export default function AccountManagement() {
           <div 
             className="p-6 rounded-lg shadow-lg space-y-4"
             style={{ 
-              background: `linear-gradient(135deg, ${colors.primary.main}05, ${colors.primary.light}15)`,
+              background: `linear-gradient(135deg, ${colors.primary.main}15, ${colors.primary.light}30)`,
               backdropFilter: 'blur(10px)',
             }}
           >
             <div className="flex items-start gap-3">
               <FiLogOut className="text-gray-600 mt-1" size={24} />
               <div>
-                <h3 className="font-medium text-gray-800">Déconnexion</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-medium text-white">Déconnexion</h3>
+                <p className="text-sm text-gray-700">
                   Se déconnecter de l'application
                 </p>
               </div>

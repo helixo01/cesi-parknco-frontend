@@ -98,7 +98,7 @@ export default function VehicleInfo() {
       className={`p-4 rounded-lg transition-all duration-300 cursor-pointer ${
         currentVehicle?.id === vehicle.id 
           ? 'bg-white shadow-lg' 
-          : 'bg-white bg-opacity-50 hover:bg-opacity-70'
+          : 'bg-white bg-opacity-80 hover:bg-opacity-100'
       }`}
       onClick={() => {
         setCurrentVehicle(vehicle);
@@ -107,8 +107,8 @@ export default function VehicleInfo() {
     >
       <div className="flex justify-between items-start">
         <div>
-          <h3 className="font-medium text-gray-800">{vehicle.name}</h3>
-          <p className="text-sm text-gray-600">{vehicle.type} - {vehicle.seats} places</p>
+          <h3 className="font-medium text-white">{vehicle.name}</h3>
+          <p className="text-sm text-gray-700">{vehicle.type} - {vehicle.seats} places</p>
           {vehicle.licensePlate && (
             <p className="text-xs text-gray-500 mt-1">{vehicle.licensePlate}</p>
           )}
@@ -135,21 +135,22 @@ export default function VehicleInfo() {
       }}
     >
       <div className="w-full max-w-md mx-auto space-y-8">
-        <button
-          onClick={() => router.push('/profile')}
-          className="flex items-center justify-center w-10 h-10 rounded-full text-white transition-transform duration-300 hover:scale-110"
-          style={{ backgroundColor: colors.primary.main }}
-        >
-          <FiArrowLeft size={20} />
-        </button>
-
-        <Title texteNormal="Mes" texteGras="Véhicules" />
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push('/profile')}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <FiArrowLeft size={24} color={colors.primary.main} />
+          </button>
+          <Title texteNormal="Informations" texteGras="Véhicule" />
+          <div className="w-10" /> {/* Espaceur pour maintenir l'alignement */}
+        </div>
         
         <div className="space-y-6">
           {/* Vehicle List */}
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <h2 className="text-lg font-medium text-gray-800">Liste des véhicules</h2>
+              <h2 className="text-lg font-medium text-white">Liste des véhicules</h2>
               <button
                 onClick={handleAddVehicle}
                 className="flex items-center gap-2 px-3 py-1 rounded-full text-white transition-all duration-300 hover:scale-105"
@@ -170,23 +171,24 @@ export default function VehicleInfo() {
             <div 
               className="rounded-lg p-6 shadow-lg space-y-6 relative"
               style={{ 
-                background: `linear-gradient(135deg, ${colors.primary.main}05, ${colors.primary.light}15)`,
+                background: `linear-gradient(135deg, ${colors.primary.main}15, ${colors.primary.light}30)`,
                 backdropFilter: 'blur(10px)',
               }}
             >
               {!isEditing && (
                 <button
                   onClick={handleEdit}
-                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-white hover:bg-opacity-30 transition-all duration-300 flex items-center gap-2"
                   style={{ color: colors.primary.main }}
                 >
                   <FiEdit2 size={20} />
+                  <span className="font-medium">Modifier</span>
                 </button>
               )}
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-gray-600 font-medium">Nom du véhicule</label>
+                  <label className="text-white font-medium">Nom du véhicule</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -197,12 +199,12 @@ export default function VehicleInfo() {
                       placeholder="Ex: Ma voiture principale"
                     />
                   ) : (
-                    <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-70">{currentVehicle.name}</p>
+                    <p className="text-gray-900 p-2 rounded-md bg-white">{currentVehicle.name}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-gray-600 font-medium">Type de véhicule</label>
+                  <label className="text-white font-medium">Type de véhicule</label>
                   {isEditing ? (
                     <select
                       value={currentVehicle.type}
@@ -217,12 +219,12 @@ export default function VehicleInfo() {
                       ))}
                     </select>
                   ) : (
-                    <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-70">{currentVehicle.type}</p>
+                    <p className="text-gray-900 p-2 rounded-md bg-white">{currentVehicle.type}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-gray-600 font-medium">Nombre de places</label>
+                  <label className="text-white font-medium">Nombre de places</label>
                   {isEditing ? (
                     <input
                       type="number"
@@ -234,12 +236,12 @@ export default function VehicleInfo() {
                       style={{ borderColor: colors.primary.main }}
                     />
                   ) : (
-                    <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-70">{currentVehicle.seats}</p>
+                    <p className="text-gray-900 p-2 rounded-md bg-white">{currentVehicle.seats}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-gray-600 font-medium">Plaque d'immatriculation (optionnel)</label>
+                  <label className="text-white font-medium">Plaque d'immatriculation (optionnel)</label>
                   {isEditing ? (
                     <input
                       type="text"
@@ -250,19 +252,19 @@ export default function VehicleInfo() {
                       placeholder="XX-123-YY"
                     />
                   ) : (
-                    <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-70">
+                    <p className="text-gray-900 p-2 rounded-md bg-white">
                       {currentVehicle.licensePlate || 'Non renseigné'}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-gray-600 font-medium">Préférences de confort</label>
+                  <label className="text-white font-medium">Préférences de confort</label>
                   <div className="grid grid-cols-1 gap-3">
                     {comfortOptions.map((option) => (
                       <div 
                         key={option.key} 
-                        className="flex items-center p-3 rounded-md bg-white bg-opacity-70 hover:bg-opacity-90 transition-all duration-300"
+                        className="flex items-center p-3 rounded-md bg-white hover:bg-gray-50 transition-all duration-300"
                       >
                         <input
                           type="checkbox"
@@ -288,7 +290,7 @@ export default function VehicleInfo() {
                               : 'white'
                           }}
                         />
-                        <label htmlFor={option.key} className="ml-2 text-gray-800">
+                        <label htmlFor={option.key} className="ml-2 text-white">
                           {option.label}
                         </label>
                       </div>
@@ -301,7 +303,8 @@ export default function VehicleInfo() {
                 <div className="flex justify-end space-x-4 mt-6 pt-4 border-t border-gray-200 border-opacity-50">
                   <button
                     onClick={handleCancel}
-                    className="flex items-center px-4 py-2 rounded-md hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+                    className="flex items-center px-4 py-2 rounded-md text-white transition-all duration-300"
+                    style={{ backgroundColor: '#ef4444' }}
                   >
                     <FiX className="mr-2" /> Annuler
                   </button>

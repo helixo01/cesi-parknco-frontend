@@ -26,7 +26,7 @@ export default function Profile() {
             <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
               <button 
                 className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-primary-600 px-4 py-2 rounded-full text-sm font-medium"
-                onClick={() => router.push('/personal-info')}
+                onClick={() => router.push('/profile/personal')}
               >
                 Modifier
               </button>
@@ -38,7 +38,7 @@ export default function Profile() {
                 backgroundColor: '#22c55e', // green-500
                 color: 'white',
               }}
-              onClick={() => router.push('/stats-info')}
+              onClick={() => router.push('/profile/stats')}
               title="Badge Éco-responsable - 10 trajets effectués"
             >
               <AiFillEnvironment size={24} />
@@ -52,41 +52,41 @@ export default function Profile() {
           <SettingsItem
             icon={AiOutlineUser}
             label="Informations personnelles"
-            onClick={() => router.push('/personal-info')}
+            onClick={() => router.push('/profile/personal')}
           />
           <SettingsItem
             icon={AiOutlineCar}
             label="Véhicule"
-            onClick={() => router.push('/vehicle-info')}
+            onClick={() => router.push('/profile/vehicle')}
           />
           <SettingsItem
             icon={AiOutlineStar}
             label="Points et statistiques"
-            onClick={() => router.push('/stats-info')}
+            onClick={() => router.push('/profile/stats')}
           />
           <SettingsItem
             icon={AiOutlineClockCircle}
             label="Réservation en cours"
-            onClick={() => router.push('/reservations-info')}
+            onClick={() => router.push('/profile/reservations')}
           />
           <SettingsItem
             icon={AiOutlineMessage}
             label="Feedback et avis"
-            onClick={() => router.push('/feedback-info')}
+            onClick={() => router.push('/profile/feedback')}
           />
           <SettingsItem
             icon={AiOutlineSafety}
             label="Gestion du compte"
-            onClick={() => router.push('/account-management')}
+            onClick={() => router.push('/profile/account')}
           />
           <SettingsItem
             icon={AiOutlineSetting}
             label="Paramètres"
-            onClick={() => router.push('/settings')}
+            onClick={() => router.push('/profile/settings')}
           />
         </div>
       </div>
       <NavBar activePage="profile" />
     </div>
   );
-}
+} 

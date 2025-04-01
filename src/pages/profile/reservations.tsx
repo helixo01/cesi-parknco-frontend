@@ -113,16 +113,17 @@ export default function ReservationsInfo() {
         backgroundImage: `linear-gradient(to bottom right, ${colors.primary.light}20, ${colors.primary.light}05)`
       }}
     >
-      <div className="w-full max-w-2xl mx-auto space-y-8">
-        <button
-          onClick={() => router.push('/profile')}
-          className="flex items-center justify-center w-10 h-10 rounded-full text-white transition-transform duration-300 hover:scale-110"
-          style={{ backgroundColor: colors.primary.main }}
-        >
-          <FiArrowLeft size={20} />
-        </button>
-
-        <Title texteNormal="Mes" texteGras="Réservations" />
+      <div className="w-full max-w-md mx-auto space-y-8">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push('/profile')}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <FiArrowLeft size={24} color={colors.primary.main} />
+          </button>
+          <Title texteNormal="Réservations" texteGras="en cours" />
+          <div className="w-10" /> {/* Espaceur pour maintenir l'alignement */}
+        </div>
         
         <div className="space-y-4">
           {reservations.map((reservation) => (

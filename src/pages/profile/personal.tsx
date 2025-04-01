@@ -141,7 +141,7 @@ export default function PersonalInfo() {
     onCustomChange?: (value: string) => void;
   }) => (
     <div className="space-y-2">
-      <label className="text-gray-600 font-medium">{label}</label>
+      <label className="text-white font-medium">{label}</label>
       {isEditing ? (
         <div className="space-y-2">
           {options ? (
@@ -162,7 +162,7 @@ export default function PersonalInfo() {
               type={type}
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              className="w-full p-2 rounded-md bg-white focus:outline-none focus:ring-2 transition-all duration-300"
+              className="w-full p-2 rounded-md bg-white focus:outline-none focus:ring-2 transition-all duration-300 border"
               style={{ borderColor: error ? "red" : colors.primary.main }}
             />
           )}
@@ -179,7 +179,7 @@ export default function PersonalInfo() {
           {error && <p className="text-red-500 text-sm">{error}</p>}
         </div>
       ) : (
-        <p className="text-gray-800 p-2 rounded-md bg-white bg-opacity-70">
+        <p className="text-gray-900 p-2 rounded-md bg-white">
           {value === "Autre" ? customValue : value}
         </p>
       )}
@@ -195,30 +195,32 @@ export default function PersonalInfo() {
       }}
     >
       <div className="w-full max-w-md mx-auto space-y-8">
-        <button
-          onClick={() => router.push('/profile')}
-          className="flex items-center justify-center w-10 h-10 rounded-full text-white transition-transform duration-300 hover:scale-110"
-          style={{ backgroundColor: colors.primary.main }}
-        >
-          <FiArrowLeft size={20} />
-        </button>
-
-        <Title texteNormal="Mes" texteGras="Informations" />
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push('/profile')}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <FiArrowLeft size={24} color={colors.primary.main} />
+          </button>
+          <Title texteNormal="Informations" texteGras="Personnelles" />
+          <div className="w-10" /> {/* Espaceur pour maintenir l'alignement */}
+        </div>
         
         <div 
           className="rounded-lg p-6 shadow-lg space-y-6 relative"
           style={{ 
-            background: `linear-gradient(135deg, ${colors.primary.main}05, ${colors.primary.light}15)`,
+            background: `linear-gradient(135deg, ${colors.primary.main}15, ${colors.primary.light}30)`,
             backdropFilter: 'blur(10px)',
           }}
         >
           {!isEditing && (
             <button
               onClick={handleEdit}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-all duration-300"
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-white hover:bg-opacity-30 transition-all duration-300 flex items-center gap-2"
               style={{ color: colors.primary.main }}
             >
               <FiEdit2 size={20} />
+              <span className="font-medium">Modifier</span>
             </button>
           )}
 
@@ -233,8 +235,8 @@ export default function PersonalInfo() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                    <BiUser size={48} className="text-gray-400" />
+                  <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                    <BiUser size={48} className="text-gray-600" />
                   </div>
                 )}
               </div>
@@ -261,7 +263,7 @@ export default function PersonalInfo() {
               )}
             </div>
             {isEditing && selectedFile && (
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-white">
                 Photo sélectionnée : {selectedFile.name}
               </p>
             )}
@@ -342,7 +344,8 @@ export default function PersonalInfo() {
             <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
               <button
                 onClick={handleCancel}
-                className="px-4 py-2 rounded-lg flex items-center gap-2 text-gray-700 hover:bg-gray-100 transition-colors duration-300"
+                className="px-4 py-2 rounded-lg flex items-center gap-2 text-white transition-colors duration-300"
+                style={{ backgroundColor: '#ef4444' }}
               >
                 <FiX size={20} />
                 Annuler

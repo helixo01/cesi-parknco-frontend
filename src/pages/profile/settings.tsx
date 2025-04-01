@@ -95,7 +95,7 @@ export default function Settings() {
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-gray-800">
         {icon}
-        <h2 className="text-lg font-medium">{title}</h2>
+        <h2 className="text-xl font-semibold text-white mb-4">{title}</h2>
       </div>
       <div className="space-y-3">
         {settings.map((setting) => (
@@ -105,7 +105,7 @@ export default function Settings() {
             style={{ backdropFilter: "blur(10px)" }}
           >
             <div>
-              <h3 className="font-medium text-gray-800">{setting.title}</h3>
+              <h3 className="text-lg font-medium text-white">{setting.title}</h3>
               <p className="text-sm text-gray-600">{setting.description}</p>
             </div>
             <button
@@ -135,15 +135,16 @@ export default function Settings() {
       }}
     >
       <div className="w-full max-w-md mx-auto space-y-8">
-        <button
-          onClick={() => router.push("/profile")}
-          className="flex items-center justify-center w-10 h-10 rounded-full text-white transition-transform duration-300 hover:scale-110"
-          style={{ backgroundColor: colors.primary.main }}
-        >
-          <FiArrowLeft size={20} />
-        </button>
-
-        <Title texteNormal="Mes" texteGras="Paramètres" />
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push('/profile')}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <FiArrowLeft size={24} color={colors.primary.main} />
+          </button>
+          <Title texteNormal="Paramètres" texteGras="du compte" />
+          <div className="w-10" /> {/* Espaceur pour maintenir l'alignement */}
+        </div>
 
         <div className="space-y-8">
           <SettingSection
@@ -170,7 +171,9 @@ export default function Settings() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-gray-800">
               <FiGlobe size={24} />
-              <h2 className="text-lg font-medium">Langue</h2>
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                Langue
+              </h3>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {languages.map((lang) => (

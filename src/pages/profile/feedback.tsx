@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { NavBar } from "@/components/global/NavBar";
 import { Title } from "@/components/global/Title";
 import { colors } from "@/styles/colors";
-import { FiStar, FiFlag, FiMessageCircle, FiUser, FiArrowLeft } from "react-icons/fi";
+import { FiStar, FiFlag, FiMessageCircle, FiUser, FiArrowLeft, FiMessageSquare, FiList } from "react-icons/fi";
 
 interface Review {
   id: string;
@@ -66,15 +66,16 @@ export default function FeedbackInfo() {
       }}
     >
       <div className="w-full max-w-md mx-auto space-y-8">
-        <button
-          onClick={() => router.push('/profile')}
-          className="flex items-center justify-center w-10 h-10 rounded-full text-white transition-transform duration-300 hover:scale-110"
-          style={{ backgroundColor: colors.primary.main }}
-        >
-          <FiArrowLeft size={20} />
-        </button>
-
-        <Title texteNormal="Mes" texteGras="Avis" />
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push('/profile')}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <FiArrowLeft size={24} color={colors.primary.main} />
+          </button>
+          <Title texteNormal="Feedback et" texteGras="Avis" />
+          <div className="w-10" /> {/* Espaceur pour maintenir l'alignement */}
+        </div>
 
         <div 
           className="rounded-lg shadow-lg overflow-hidden"
@@ -112,7 +113,7 @@ export default function FeedbackInfo() {
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-medium flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                       <FiUser className="text-gray-400" />
                       {review.name}
                     </h3>

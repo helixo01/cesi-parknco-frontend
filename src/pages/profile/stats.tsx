@@ -49,15 +49,16 @@ export default function StatsInfo() {
       }}
     >
       <div className="w-full max-w-md mx-auto space-y-8">
-        <button
-          onClick={() => router.push('/profile')}
-          className="flex items-center justify-center w-10 h-10 rounded-full text-white transition-transform duration-300 hover:scale-110"
-          style={{ backgroundColor: colors.primary.main }}
-        >
-          <FiArrowLeft size={20} />
-        </button>
-
-        <Title texteNormal="Mes" texteGras="Statistiques" />
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push('/profile')}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <FiArrowLeft size={24} color={colors.primary.main} />
+          </button>
+          <Title texteNormal="Points et" texteGras="Statistiques" />
+          <div className="w-10" /> {/* Espaceur pour maintenir l'alignement */}
+        </div>
         
         <div className="grid grid-cols-2 gap-4">
           {stats.map((stat, index) => (
@@ -78,7 +79,7 @@ export default function StatsInfo() {
               >
                 {stat.icon}
               </div>
-              <h3 className="text-sm font-medium text-gray-600">{stat.title}</h3>
+              <h3 className="text-sm font-medium text-white">{stat.title}</h3>
               <p className="text-2xl font-bold" style={{ color: colors.primary.main }}>
                 {stat.value}
               </p>
@@ -96,7 +97,7 @@ export default function StatsInfo() {
           }}
         >
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: colors.primary.main }}>
+            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <FiAward /> Badges
             </h3>
             
@@ -112,14 +113,14 @@ export default function StatsInfo() {
                 <AiFillEnvironment size={32} />
               </div>
               <div className="flex-1">
-                <h4 className="font-semibold text-gray-900">Éco-responsable</h4>
+                <h4 className="font-semibold text-white">Éco-responsable</h4>
                 <p className="text-sm font-medium text-gray-700">10 trajets effectués</p>
               </div>
             </div>
 
             {/* Next Badge */}
             <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">Prochain objectif</h4>
+              <h4 className="text-sm font-medium text-white">Prochain objectif</h4>
               <div className="p-4 rounded-lg bg-white bg-opacity-50 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div 
@@ -132,7 +133,7 @@ export default function StatsInfo() {
                     <AiOutlineStar size={24} />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900">Super Covoitureur</h4>
+                    <h4 className="font-semibold text-white">Super Covoitureur</h4>
                     <p className="text-sm font-medium text-gray-700">25 trajets effectués</p>
                   </div>
                 </div>
@@ -153,7 +154,7 @@ export default function StatsInfo() {
           }}
         >
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: colors.primary.main }}>
+            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <AiOutlineTrophy /> Classement
             </h3>
             <div className="space-y-3">
