@@ -10,21 +10,22 @@ import { userService } from "@/services/userService";
 import { useRouter } from "next/router";
 
 export default function Home() {
-  const [prenom, setPrenom] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const userData = await userService.getUserData();
-        setPrenom(userData.prenom);
+        setFirstName(userData.firstName);
       } catch (error) {
         console.error("Erreur lors de la récupération des données utilisateur:", error);
+        router.push('/login');
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [router]);
 
   return (
     <div className="min-h-screen flex flex-col items-center p-4 pb-20" style={{ backgroundColor: colors.background.page }}>
@@ -34,7 +35,7 @@ export default function Home() {
         </div>
         <Title 
           texteNormal="Bienvenue"
-          texteGras={prenom}
+          texteGras={firstName}
           texteNormal2=", prêt à covoiturer ?"
         />
         <div className="flex justify-center">
@@ -62,4 +63,4 @@ export default function Home() {
       <NavBar activePage="home" />
     </div>
   );
-} 
+}

@@ -9,6 +9,7 @@ import { Division } from "@/components/global/Division";
 import { Info } from "@/components/global/Info";
 import { HelpText } from "@/components/global/HelpText";
 import { colors } from "@/styles/colors";
+import { authService } from "@/services/auth";
 
 interface FormData {
   nom: string;
@@ -92,25 +93,27 @@ export default function Inscription() {
     return true;
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowInfo(false);
-
-    if (!validateForm()) {
-      return;
-    }
+    
+    if (!validateForm()) return;
 
     try {
-      // TODO: Implémenter l'appel API pour créer le compte
-      console.log('Données du formulaire:', formData);
-      setInfoMessage('Compte créé avec succès !');
+      await authService.register({
+        nom: formData.nom,
+        prenom: formData.prenom,
+        email: formData.email,
+        motDePasse: formData.motDePasse,
+      });
+
+      setInfoMessage('Inscription réussie ! Redirection vers la page de connexion...');
       setInfoType('success');
       setShowInfo(true);
-      // Redirection après un court délai pour montrer le message de succès
+
       setTimeout(() => {
         router.push('/login');
       }, 2000);
-    } catch (err) {
+    } catch (error) {
       setInfoMessage('Une erreur est survenue lors de l\'inscription');
       setInfoType('error');
       setShowInfo(true);
@@ -177,7 +180,6 @@ export default function Inscription() {
             <Button
               text="S'inscrire"
               variant="primary"
-              onClick={() => handleSubmit(new Event('submit') as unknown as FormEvent<HTMLFormElement>)}
             />
           </form>
           <div className="space-y-4 text-center">

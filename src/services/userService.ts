@@ -1,6 +1,11 @@
+import axios from 'axios';
+import { API_URL } from '@/config/api';
+
 interface UserData {
-  prenom: string;
-  // Autres données utilisateur à ajouter plus tard
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
 }
 
 export const userService = {
@@ -10,17 +15,32 @@ export const userService = {
    */
   async getUserData(): Promise<UserData> {
     try {
-      // TODO: Remplacer par l'appel API réel
-      // const response = await fetch('/api/user');
-      // const data = await response.json();
-      // return data;
-      
-      // Pour le moment, on retourne des données temporaires
+      // Récupère le token du localStorage
+      const token = localStorage.getItem('token');
+      console.log('Token trouvé:', token);
+
+      if (!token) {
+        throw new Error('Non connecté');
+      }
+
+      console.log('Appel API avec token...');
+      // Appel à l'API avec le token
+      const response = await axios.get(`${API_URL}/api/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log('Réponse API:', response.data);
+
+      // Retourne les données utilisateur
       return {
-        prenom: "Jacques"
+        firstName: response.data.user.firstName,
+        lastName: response.data.user.lastName,
+        email: response.data.user.email,
+        role: response.data.user.role
       };
     } catch (error) {
-      console.error("Erreur lors de la récupération des données utilisateur:", error);
+      console.error('Erreur complète:', error);
       throw error;
     }
   }
