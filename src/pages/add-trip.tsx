@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavBar } from "@/components/global/NavBar";
 import { Header } from "@/components/global/Header";
-import { TextInput } from "@/components/global/TextInput";
+import { FormInput } from "@/components/global/FormInput";
 import { Button } from "@/components/global/Button";
 import { VehicleSection } from "@/components/trip/VehicleSection";
 import { useVehicles } from "@/hooks/useVehicles";
@@ -49,14 +49,14 @@ export default function AddTrip() {
       <div className="w-full max-w-md mx-auto space-y-8">
         <Header texteNormal="Proposer un" texteGras="trajet" />
         <div className="space-y-4">
-          <TextInput
+          <FormInput
             label="Lieu de départ"
             value={departure}
             onChange={setDeparture}
             placeholder="Entrez le lieu de départ"
             error={errors.departure}
           />
-          <TextInput
+          <FormInput
             label="Lieu d'arrivée"
             value={arrival}
             onChange={setArrival}
@@ -64,14 +64,14 @@ export default function AddTrip() {
             error={errors.arrival}
           />
           <div className="grid grid-cols-2 gap-4">
-            <TextInput
+            <FormInput
               label="Date"
               type="date"
               value={date}
               onChange={setDate}
               error={errors.date}
             />
-            <TextInput
+            <FormInput
               label="Heure"
               type="time"
               value={time}

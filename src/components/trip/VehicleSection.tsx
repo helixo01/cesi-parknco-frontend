@@ -1,6 +1,5 @@
 import React from "react";
-import { TextInput } from "@/components/global/TextInput";
-import { NumberInput } from "@/components/global/NumberInput";
+import { FormInput } from "@/components/global/FormInput";
 import { Vehicle, VehicleType } from "@/types/trip";
 
 interface VehicleSectionProps {
@@ -28,7 +27,7 @@ export const VehicleSection: React.FC<VehicleSectionProps> = ({
 }) => {
   return (
     <>
-      <TextInput
+      <FormInput
         label="Véhicule"
         type="select"
         value={selectedVehicle?.id || ""}
@@ -41,8 +40,9 @@ export const VehicleSection: React.FC<VehicleSectionProps> = ({
       />
 
       <div className="space-y-4">
-        <NumberInput
+        <FormInput
           label="Nombre de places restantes"
+          type="number"
           value={remainingSeats}
           onChange={onRemainingSeatsChange}
           placeholder="Nombre de places"
@@ -50,7 +50,7 @@ export const VehicleSection: React.FC<VehicleSectionProps> = ({
           max={8}
           error={errors.remainingSeats}
         />
-        <TextInput
+        <FormInput
           label="Type de véhicule"
           type="select"
           value={vehicleType}

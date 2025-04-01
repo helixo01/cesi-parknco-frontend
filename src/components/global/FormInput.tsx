@@ -8,7 +8,7 @@ interface Option {
   disabled?: boolean;
 }
 
-interface TextInputProps {
+interface FormInputProps {
   label: string;
   type?: "text" | "password" | "email" | "number" | "date" | "time" | "select";
   placeholder?: string;
@@ -22,9 +22,12 @@ interface TextInputProps {
   variant?: "default" | "light" | "error";
   // Options pour le type select
   options?: Option[];
+  // Props spécifiques pour le type number
+  min?: number;
+  max?: number;
 }
 
-export const TextInput: React.FC<TextInputProps> = ({
+export const FormInput: React.FC<FormInputProps> = ({
   label,
   type = "text",
   placeholder,
@@ -36,6 +39,8 @@ export const TextInput: React.FC<TextInputProps> = ({
   disabled = false,
   variant = "default",
   options = [],
+  min,
+  max,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -66,6 +71,17 @@ export const TextInput: React.FC<TextInputProps> = ({
   };
 
   const { backgroundColor, textColor, labelColor, placeholderColor } = getColors();
+
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    // Vérifie si la valeur est un nombre valide
+    if (newValue === "" || /^\d+$/.test(newValue)) {
+      const numValue = parseInt(newValue);
+      if (newValue === "" || (min === undefined || numValue >= min) && (max === undefined || numValue <= max)) {
+        onChange(newValue);
+      }
+    }
+  };
 
   const renderInput = () => {
     if (type === "select") {
@@ -113,10 +129,12 @@ export const TextInput: React.FC<TextInputProps> = ({
       <input
         type={type === "password" && showPassword ? "text" : type}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={type === "number" ? handleNumberChange : (e) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
         disabled={disabled}
+        min={type === "number" ? min : undefined}
+        max={type === "number" ? max : undefined}
         style={{
           backgroundColor,
           color: textColor,
