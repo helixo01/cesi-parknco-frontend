@@ -2,6 +2,7 @@
 
 import { Header } from '@/components/global/Header';
 import { NavBar } from '@/components/global/NavBar';
+import TrajetItem from '@/components/global/TrajetItem';
 import { colors } from "@/styles/colors";
 
 export default function Trips() {
@@ -13,7 +14,9 @@ export default function Trips() {
           texteGras="Trajets"
         />
         <div className="space-y-4">
-          {/* Le contenu des trajets sera ajouté ici */}
+          <TrajetItem departure="Paris" arrival="Lyon" date={new Date()} ETA={new Date()} ETD={new Date()} status="En attente" />
+          <TrajetItem departure="Saint-Remy-en-Bouzemont-Saint-Genest-et-Isson" arrival="CESI ARRAS" date={new Date()} ETA={new Date()} ETD={new Date()} status="Terminé" />
+          <TrajetItem departure="Crèvecoeur-sur-l'escaut" arrival="CESI ARRAS" date={new Date()} ETA={new Date()} ETD={new Date()} status="confirmé" />
         </div>
       </div>
       <NavBar activePage="trips" />
