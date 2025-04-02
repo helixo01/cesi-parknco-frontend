@@ -77,6 +77,7 @@ export default function AddTrip() {
             onChange={setDeparture}
             placeholder="Entrez le lieu de départ"
             error={errors.departure}
+            required={true}
           />
           <TextInput
             label="Lieu d'arrivée"
@@ -84,6 +85,7 @@ export default function AddTrip() {
             onChange={setArrival}
             placeholder="Entrez le lieu d'arrivée"
             error={errors.arrival}
+            required={true}
           />
           <div className="grid grid-cols-2 gap-4">
             <TextInput
@@ -92,6 +94,7 @@ export default function AddTrip() {
               value={date}
               onChange={setDate}
               error={errors.date}
+              required={true}
             />
             <TextInput
               label="Heure"
@@ -99,6 +102,7 @@ export default function AddTrip() {
               value={time}
               onChange={setTime}
               error={errors.time}
+              required={true}
             />
           </div>
           

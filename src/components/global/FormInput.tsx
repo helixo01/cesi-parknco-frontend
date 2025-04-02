@@ -123,8 +123,12 @@ export const FormInput: React.FC<FormInputProps> = ({
   return (
     <div className={`space-y-1 ${className}`}>
       <label className="block text-sm font-medium" style={{ color: colors.text.label }}>
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        <span>{label}</span>
+        {required && (
+          <span className="ml-1 font-medium" style={{ color: colors.state.error }}>
+            *
+          </span>
+        )}
       </label>
 
       <div className="relative">

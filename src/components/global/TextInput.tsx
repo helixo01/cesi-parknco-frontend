@@ -150,7 +150,12 @@ export const TextInput: React.FC<TextInputProps> = ({
           fontSize: "14px"
         }}
       >
-        {label}
+        <span>{label}</span>
+        {required && (
+          <span className="ml-1 font-medium" style={{ color: colors.state.error }}>
+            *
+          </span>
+        )}
       </label>
       <div className="relative">
         {renderInput()}

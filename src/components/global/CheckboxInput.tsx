@@ -74,21 +74,22 @@ export const CheckboxInput: React.FC<CheckboxInputProps> = ({
                 href={linkHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline font-medium text-primary-main hover:opacity-80 transition-opacity duration-200"
+                className="underline font-medium hover:opacity-80 transition-opacity duration-200"
+                style={{ color: colors.text.label }}
               >
                 {linkText}
               </a>
             </>
           )}
           {required && (
-            <span className="ml-1 text-error-dark font-medium">
+            <span className="ml-1 font-medium" style={{ color: colors.state.error }}>
               *
             </span>
           )}
         </div>
       </label>
       {error && (
-        <p className="mt-1 text-sm text-error-main">
+        <p className="mt-1 text-sm" style={{ color: "#FF6B6B" }}>
           {error}
         </p>
       )}

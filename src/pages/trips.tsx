@@ -6,7 +6,7 @@ import { NavBar } from '@/components/global/NavBar';
 import { colors } from "@/styles/colors";
 import { Trip } from '@/types/trip';
 import { tripService } from '@/services/tripService';
-import { TripCard } from '@/components/trips/TripCard';
+import TrajetItem from '@/components/global/TrajetItem';
 import { useRouter } from 'next/router';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -31,8 +31,18 @@ export default function Trips() {
         setLoading(true);
         setError(null);
         const response = await tripService.getMyTrips();
-        setCurrentTrips(response.currentTrips);
-        setHistoricTrips(response.historicTrips);
+        
+        // Tri des trajets par date (plus récent en premier)
+        const sortByDate = (trips: Trip[]) => {
+          return trips.sort((a, b) => {
+            const dateA = new Date(a.date + " " + a.time);
+            const dateB = new Date(b.date + " " + b.time);
+            return dateB.getTime() - dateA.getTime();
+          });
+        };
+
+        setCurrentTrips(sortByDate(response.currentTrips));
+        setHistoricTrips(sortByDate(response.historicTrips));
       } catch (err) {
         if (err instanceof Error) {
           if (err.message === 'Session expirée') {
@@ -88,13 +98,12 @@ export default function Trips() {
         <div className="space-y-8">
           {/* Trajets actuels */}
           <section>
-            <h2 className="text-xl font-semibold mb-4">Trajets à venir</h2>
             {currentTrips.length === 0 ? (
-              <p className="text-gray-500">Aucun trajet à venir</p>
+              <p style={{ color: colors.components.titre.text.highlight }}>Aucun trajet à venir</p>
             ) : (
               <div className="space-y-4">
                 {currentTrips.map((trip) => (
-                  <TripCard key={trip.id} trip={trip} />
+                  <TrajetItem key={trip.id} trip={trip} />
                 ))}
               </div>
             )}
@@ -102,13 +111,12 @@ export default function Trips() {
 
           {/* Historique des trajets */}
           <section>
-            <h2 className="text-xl font-semibold mb-4">Historique des trajets</h2>
             {historicTrips.length === 0 ? (
-              <p className="text-gray-500">Aucun trajet dans l'historique</p>
+              <p style={{ color: colors.components.titre.text.highlight }}>Aucun trajet dans l'historique</p>
             ) : (
               <div className="space-y-4">
                 {historicTrips.map((trip) => (
-                  <TripCard key={trip.id} trip={trip} />
+                  <TrajetItem key={trip.id} trip={trip} />
                 ))}
               </div>
             )}

@@ -57,7 +57,11 @@ export const tripService = {
         throw new Error(error.message || 'Erreur lors de la récupération des trajets');
       }
 
-      return response.json();
+      const data = await response.json();
+      return {
+        currentTrips: data.currentTrips.filter((trip: Trip) => trip.userId),
+        historicTrips: data.historicTrips.filter((trip: Trip) => trip.userId)
+      };
     } catch (error) {
       throw error;
     }

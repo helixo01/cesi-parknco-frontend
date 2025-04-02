@@ -49,6 +49,7 @@ export const VehicleSection: React.FC<VehicleSectionProps> = ({
           min={1}
           max={8}
           error={errors.remainingSeats}
+          required={true}
         />
         <TextInput
           label="Type de véhicule"
@@ -61,6 +62,7 @@ export const VehicleSection: React.FC<VehicleSectionProps> = ({
             { value: "electrique", label: "Électrique" }
           ]}
           disabled={!!selectedVehicle}
+          required={true}
         />
       </div>
     </>

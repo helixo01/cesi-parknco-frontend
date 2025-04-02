@@ -47,6 +47,9 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         }}
       >
         {label}
+        {required && (
+          <span style={{ color: colors.state.error, marginLeft: "4px" }}>*</span>
+        )}
       </label>
       <input
         type="number"
