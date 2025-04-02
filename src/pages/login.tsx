@@ -22,23 +22,43 @@ export default function Login() {
             type={formState.infoType}
             show={formState.showInfo}
           />
-          <FormInput
-            label="Email"
-            type="email"
-            placeholder="Entrez votre email"
-            value={formState.email}
-            onChange={(value) => updateField("email", value)}
-            required
-          />
           <div className="space-y-2">
-            <FormInput
-              label="Mot de passe"
-              type="password"
-              placeholder="Entrez votre mot de passe"
-              value={formState.password}
-              onChange={(value) => updateField("password", value)}
-              required
-            />
+            <div className="text-base font-medium" style={{ color: colors.text.label }}>
+              Email <span className="text-red-500">*</span>
+            </div>
+            <div className="relative">
+              <input
+                type="email"
+                placeholder="Entrez votre email"
+                value={formState.email}
+                onChange={(e) => updateField("email", e.target.value)}
+                required
+                className="w-full px-4 py-2 bg-transparent border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  borderColor: colors.text.label,
+                  color: colors.text.white,
+                }}
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="text-base font-medium" style={{ color: colors.text.label }}>
+              Mot de passe <span className="text-red-500">*</span>
+            </div>
+            <div className="relative">
+              <input
+                type="password"
+                placeholder="Entrez votre mot de passe"
+                value={formState.password}
+                onChange={(e) => updateField("password", e.target.value)}
+                required
+                className="w-full px-4 py-2 bg-transparent border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  borderColor: colors.text.label,
+                  color: colors.text.white,
+                }}
+              />
+            </div>
             <HelpText
               text="Mot de passe oublié ?"
               linkText="Cliquez ici"
@@ -73,4 +93,4 @@ export default function Login() {
       </div>
     </div>
   );
-} 
+}

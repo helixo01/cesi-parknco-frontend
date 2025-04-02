@@ -28,7 +28,6 @@ export default function Reservations() {
         text: "En attente",
         color: colors.primary.light
       },
-      notification: "Le conducteur a modifié l'heure de départ"
     },
     {
       date: "jeudi 3 avril",
@@ -85,19 +84,7 @@ export default function Reservations() {
                   description={reservation.meetingPoint}
                   className="bg-opacity-20 hover:bg-opacity-30 transition-all"
                   style={{ backgroundColor: colors.primary.main }}
-                />
-
-                {reservation.notification && (
-                  <SettingsItem
-                    icon={FaExclamationCircle}
-                    label={reservation.notification}
-                    className="bg-opacity-20 hover:bg-opacity-30 transition-all border border-opacity-20"
-                    style={{ 
-                      backgroundColor: colors.primary.light,
-                      borderColor: colors.primary.light
-                    }}
-                  />
-                )}
+                /> 
               </div>
             ))}
           </div>

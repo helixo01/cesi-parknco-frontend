@@ -77,27 +77,6 @@ export default function Points() {
         </Division>
 
         <Division>
-          <Title texteNormal="Mon" texteGras="classement" />
-          <div className="space-y-2 mt-4">
-            {ranking.map((rank, index) => (
-              <SettingsItem
-                key={index}
-                icon={FaTrophy}
-                label={rank.name}
-                description={`${rank.points} pts`}
-                prefix={`#${rank.position}`}
-                className={`${
-                  rank.highlighted 
-                    ? "bg-blue-600 bg-opacity-40 hover:bg-opacity-50 border-2 border-blue-400" 
-                    : "bg-opacity-40 hover:bg-opacity-50"
-                }`}
-                style={{ backgroundColor: rank.highlighted ? colors.primary.main : colors.background.navbar }}
-              />
-            ))}
-          </div>
-        </Division>
-
-        <Division>
           <Title texteNormal="Mes" texteGras="badges" />
           <div className="space-y-4 mt-4">
             {badges.map((badge, index) => (
@@ -107,10 +86,31 @@ export default function Points() {
                 label={badge.title}
                 description={badge.subtitle}
                 progress={badge.progress}
-                className="bg-opacity-40 hover:bg-opacity-50"
+                className="bg-opacity-20 hover:bg-opacity-30 transition-all"
                 style={{ 
                   backgroundColor: badge.color === "bg-green-500" ? colors.state.success : colors.primary.main 
                 }}
+              />
+            ))}
+          </div>
+        </Division>
+
+        <Division>
+          <Title texteNormal="Mon" texteGras="classement" />
+          <div className="space-y-2 mt-4">
+            {ranking.map((rank, index) => (
+              <SettingsItem
+                key={index}
+                icon={FaTrophy}
+                label={rank.name}
+                description={`${rank.points} pts`}
+                prefix={`#${rank.position}`}
+                className={`transition-all ${
+                  rank.highlighted 
+                    ? "bg-opacity-20 hover:bg-opacity-30" 
+                    : "bg-opacity-0 hover:bg-opacity-10"
+                }`}
+                style={{ backgroundColor: colors.primary.main }}
               />
             ))}
           </div>
