@@ -5,8 +5,11 @@ import { Title } from "@/components/global/Title";
 import { SettingsItem } from "@/components/global/SettingsItem";
 import { colors } from "@/styles/colors";
 import { AiOutlineUser, AiOutlineCar, AiOutlineStar, AiOutlineClockCircle, AiOutlineMessage, AiOutlineSetting, AiOutlineSafety } from "react-icons/ai";
+import { useRouter } from "next/router";
 
 export default function Profile() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen flex flex-col p-4 pb-20" style={{ backgroundColor: colors.background.page }}>
       <div className="w-full max-w-md mx-auto space-y-8">
@@ -18,7 +21,7 @@ export default function Profile() {
           <SettingsItem
             icon={AiOutlineUser}
             label="Informations personnelles"
-            onClick={() => {}}
+            onClick={() => router.push("/info-perso")}
           />
           <SettingsItem
             icon={AiOutlineCar}
@@ -55,4 +58,4 @@ export default function Profile() {
       <NavBar activePage="profile" />
     </div>
   );
-} 
+}
