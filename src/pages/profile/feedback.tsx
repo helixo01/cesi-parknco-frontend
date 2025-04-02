@@ -53,7 +53,7 @@ export default function Feedback() {
       <div className="w-full max-w-md mx-auto space-y-8">
         <Header 
           texteNormal="Mes" 
-          texteGras="Avis" 
+          texteGras="avis" 
         />
 
         <div className="grid grid-cols-2">

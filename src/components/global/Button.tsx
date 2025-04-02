@@ -7,6 +7,7 @@ interface ButtonProps {
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
+  icon?: React.ReactNode;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -15,6 +16,7 @@ export const Button: React.FC<ButtonProps> = ({
   onClick,
   className = "",
   disabled = false,
+  icon,
 }) => {
   const getColors = () => {
     switch (variant) {
@@ -47,6 +49,7 @@ export const Button: React.FC<ButtonProps> = ({
         transition-colors duration-200
         focus:outline-none focus:ring-2 focus:ring-offset-2
         disabled:opacity-50 disabled:cursor-not-allowed
+        flex items-center justify-center space-x-2
         ${className}
       `}
       style={{
@@ -55,7 +58,8 @@ export const Button: React.FC<ButtonProps> = ({
         fontSize: "16px"
       }}
     >
-      {text}
+      {icon && <span className="w-5 h-5">{icon}</span>}
+      <span>{text}</span>
     </button>
   );
 }; 
