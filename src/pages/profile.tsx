@@ -44,7 +44,7 @@ export default function Profile() {
         <div className="flex justify-center">
           <ProfilPic width={150} height={150} shape="circle" />
         </div>
-        <Title texteNormal="Mon" texteGras="Profil" />
+        <Title texteNormal="Mon" texteGras="profil" />
         <div className="space-y-4">
           <SettingsItem
             icon={AiOutlineUser}
