@@ -53,14 +53,14 @@ export default function Inscription() {
       setShowInfo(true);
       return false;
     }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    const emailRegex = /^[^\s@]+@(viacesi|cesi)\.fr$/;
     if (!emailRegex.test(formData.email)) {
-      setInfoMessage('L\'email n\'est pas valide');
+      setInfoMessage('L\'email doit être une adresse CESI valide (contenant @viacesi.fr ou @cesi.fr)');
       setInfoType('error');
       setShowInfo(true);
       return false;
-    }
+      }
 
     if (!formData.motDePasse) {
       setInfoMessage('Le mot de passe est requis');
@@ -180,7 +180,7 @@ export default function Inscription() {
             <Button
               text="S'inscrire"
               variant="primary"
-            />
+              onClick={() => handleSubmit(new Event('submit') as unknown as React.FormEvent)}            />
           </form>
           <div className="space-y-4 text-center">
             <HelpText

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from 'next/router';
 import { NavBar } from "@/components/global/NavBar";
 import { Header } from "@/components/global/Header";
 import { TextInput } from "@/components/global/TextInput";
@@ -7,13 +8,18 @@ import { VehicleSection } from "@/components/trip/VehicleSection";
 import { useVehicles } from "@/hooks/useVehicles";
 import { useTripFormValidation } from "@/hooks/useTripFormValidation";
 import { colors } from "@/styles/colors";
-import { TripFormData } from "@/types/trip";
+import { tripService } from "@/services/tripService";
+import { Trip } from "@/types/trip";
 
 export default function AddTrip() {
+  const router = useRouter();
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [price, setPrice] = useState("");
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     vehicles,
@@ -25,22 +31,39 @@ export default function AddTrip() {
     handleVehicleChange
   } = useVehicles();
 
-  const formData: TripFormData = {
+  const formData = {
     departure,
     arrival,
     date,
     time,
-    selectedVehicle,
+    selectedVehicle: selectedVehicle?.id,
     remainingSeats,
-    vehicleType
+    vehicleType,
+    price: parseFloat(price)
   };
 
   const { errors, validateForm } = useTripFormValidation(formData);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setShowError(false);
     if (validateForm()) {
-      // TODO: Implémenter la logique d'envoi du formulaire
-      console.log(formData);
+      try {
+        const tripData: Omit<Trip, 'id' | 'userId'> = {
+          departure,
+          arrival,
+          date,
+          time,
+          availableSeats: parseInt(remainingSeats),
+          price: parseFloat(price),
+          vehicle: vehicleType
+        };
+
+        await tripService.createTrip(tripData);
+        router.push('/trips'); // Redirection vers la liste des trajets
+      } catch (error) {
+        setShowError(true);
+        setErrorMessage(error instanceof Error ? error.message : 'Une erreur est survenue');
+      }
     }
   };
 
@@ -80,6 +103,15 @@ export default function AddTrip() {
             />
           </div>
 
+          <TextInput
+            label="Prix"
+            type="number"
+            value={price}
+            onChange={setPrice}
+            placeholder="Entrez le prix du trajet"
+            error={errors.price}
+          />
+
           <VehicleSection
             vehicles={vehicles}
             selectedVehicle={selectedVehicle}
@@ -90,6 +122,12 @@ export default function AddTrip() {
             onVehicleTypeChange={setVehicleType}
             errors={errors}
           />
+
+          {showError && (
+            <div className="text-red-500 text-sm mt-2">
+              {errorMessage}
+            </div>
+          )}
 
           <div className="pt-4">
             <Button
@@ -103,4 +141,4 @@ export default function AddTrip() {
       <NavBar activePage="home" />
     </div>
   );
-} 
+}
