@@ -42,7 +42,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
       <label 
         className="block font-medium mb-2"
         style={{ 
-          color: error ? colors.state.error : colors.text.label,
+          color: colors.text.label,
           fontSize: "14px"
         }}
       >

@@ -16,7 +16,6 @@ export interface TripFormData {
   selectedVehicle?: string;
   remainingSeats: string;
   vehicleType: string;
-  price: number;
 }
 
 export interface TripFormErrors {
@@ -26,7 +25,6 @@ export interface TripFormErrors {
   time?: string;
   remainingSeats?: string;
   vehicleType?: string;
-  price?: string;
 }
 
 export interface Trip {
@@ -37,7 +35,6 @@ export interface Trip {
   date: string;
   time: string;
   availableSeats: number;
-  price: number;
   vehicle?: string;
   status?: 'pending' | 'active' | 'completed' | 'cancelled';
   createdAt?: string;

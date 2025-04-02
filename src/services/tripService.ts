@@ -1,53 +1,65 @@
 import { Trip } from '@/types/trip';
 import { API_URL } from '@/config/index';
 
-
 export const tripService = {
   async createTrip(tripData: Omit<Trip, 'id' | 'userId'>) {
-    const response = await fetch(`${API_URL}/trips`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify(tripData)
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Erreur lors de la création du trajet');
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Non connecté');
     }
 
-    return response.json();
+    try {
+      const response = await fetch(`${API_URL}/trips`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(tripData)
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        throw new Error('Session expirée');
+      }
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la création du trajet');
+      }
+
+      return response.json();
+    } catch (error) {
+      throw error;
+    }
   },
 
-  async getAllTrips() {
-    const response = await fetch(`${API_URL}/trips`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Erreur lors de la récupération des trajets');
+  async getMyTrips() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('Non connecté');
     }
 
-    return response.json();
-  },
+    try {
+      const response = await fetch(`${API_URL}/trips/my-trips`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
 
-  async getTripById(id: string) {
-    const response = await fetch(`${API_URL}/trips/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        throw new Error('Session expirée');
       }
-    });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Erreur lors de la récupération du trajet');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de la récupération des trajets');
+      }
+
+      return response.json();
+    } catch (error) {
+      throw error;
     }
-
-    return response.json();
   }
 };

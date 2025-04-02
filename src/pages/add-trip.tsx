@@ -17,7 +17,6 @@ export default function AddTrip() {
   const [arrival, setArrival] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [price, setPrice] = useState("");
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -39,13 +38,14 @@ export default function AddTrip() {
     selectedVehicle: selectedVehicle?.id,
     remainingSeats,
     vehicleType,
-    price: parseFloat(price)
   };
 
-  const { errors, validateForm } = useTripFormValidation(formData);
+  const { errors, validateForm, setErrors } = useTripFormValidation(formData);
 
   const handleSubmit = async () => {
     setShowError(false);
+    setErrors({});
+    
     if (validateForm()) {
       try {
         const tripData: Omit<Trip, 'id' | 'userId'> = {
@@ -54,12 +54,11 @@ export default function AddTrip() {
           date,
           time,
           availableSeats: parseInt(remainingSeats),
-          price: parseFloat(price),
           vehicle: vehicleType
         };
 
         await tripService.createTrip(tripData);
-        router.push('/trips'); // Redirection vers la liste des trajets
+        router.push('/trips');
       } catch (error) {
         setShowError(true);
         setErrorMessage(error instanceof Error ? error.message : 'Une erreur est survenue');
@@ -102,16 +101,7 @@ export default function AddTrip() {
               error={errors.time}
             />
           </div>
-
-          <TextInput
-            label="Prix"
-            type="number"
-            value={price}
-            onChange={setPrice}
-            placeholder="Entrez le prix du trajet"
-            error={errors.price}
-          />
-
+          
           <VehicleSection
             vehicles={vehicles}
             selectedVehicle={selectedVehicle}
@@ -133,7 +123,7 @@ export default function AddTrip() {
             <Button
               text="Valider"
               onClick={handleSubmit}
-              disabled={Object.keys(errors).length > 0}
+              disabled={false}
             />
           </div>
         </div>

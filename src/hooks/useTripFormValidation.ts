@@ -29,10 +29,6 @@ export const useTripFormValidation = (formData: TripFormData) => {
       newErrors.remainingSeats = "Le nombre de places doit être supérieur à 0";
     }
 
-    if (!formData.price || formData.price <= 0) {
-      newErrors.price = "Le prix doit être supérieur à 0";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

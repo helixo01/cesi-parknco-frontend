@@ -50,14 +50,14 @@ export const TextInput: React.FC<TextInputProps> = ({
         };
       case "error":
         return {
-          backgroundColor: colors.background.error,
+          backgroundColor: colors.background.input,
           textColor: colors.text.primary,
-          labelColor: colors.state.error,
+          labelColor: colors.text.label,
           placeholderColor: colors.text.placeholder,
         };
       default:
         return {
-          backgroundColor: "#FFFFFF",
+          backgroundColor: colors.background.input,
           textColor: colors.text.primary,
           labelColor: colors.text.label,
           placeholderColor: colors.text.placeholder,
