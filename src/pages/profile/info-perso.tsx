@@ -131,7 +131,7 @@ export default function InfoPerso() {
       <div className="w-full max-w-md mx-auto space-y-8">
         <Header 
           texteNormal="Mes" 
-          texteGras="Informations" 
+          texteGras="informations" 
         />
 
         <Division className="mt-8">
