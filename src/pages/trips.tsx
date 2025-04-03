@@ -109,18 +109,6 @@ export default function Trips() {
             )}
           </section>
 
-          {/* Historique des trajets */}
-          <section>
-            {historicTrips.length === 0 ? (
-              <p style={{ color: colors.components.titre.text.highlight }}>Aucun trajet dans l'historique</p>
-            ) : (
-              <div className="space-y-4">
-                {historicTrips.map((trip) => (
-                  <TrajetItem key={trip.id} trip={trip} />
-                ))}
-              </div>
-            )}
-          </section>
         </div>
       </div>
       <NavBar activePage="trips" />

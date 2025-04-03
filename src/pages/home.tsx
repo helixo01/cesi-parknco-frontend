@@ -49,9 +49,9 @@ export default function Home() {
         </div>
         <div className="space-y-8">
           <Button
-            text="Trouver un trajet"
+            text="Recherche d'un trajet"
             variant="primary"
-            onClick={() => {}}
+            onClick={() => router.push("/search-trip")}
           />
           <Button
             text="Proposer un trajet"

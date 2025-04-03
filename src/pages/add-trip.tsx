@@ -10,6 +10,7 @@ import { useTripFormValidation } from "@/hooks/useTripFormValidation";
 import { colors } from "@/styles/colors";
 import { tripService } from "@/services/tripService";
 import { Trip } from "@/types/trip";
+import PopUpConfirmation from "@/components/global/PopUpConfirmation";
 
 export default function AddTrip() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function AddTrip() {
   const [time, setTime] = useState("");
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const {
     vehicles,
@@ -42,27 +44,33 @@ export default function AddTrip() {
 
   const { errors, validateForm, setErrors } = useTripFormValidation(formData);
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     setShowError(false);
     setErrors({});
     
     if (validateForm()) {
-      try {
-        const tripData: Omit<Trip, 'id' | 'userId'> = {
-          departure,
-          arrival,
-          date,
-          time,
-          availableSeats: parseInt(remainingSeats),
-          vehicle: vehicleType
-        };
+      setIsPopupOpen(true);
+    }
+  };
 
-        await tripService.createTrip(tripData);
-        router.push('/trips');
-      } catch (error) {
-        setShowError(true);
-        setErrorMessage(error instanceof Error ? error.message : 'Une erreur est survenue');
-      }
+  const handleConfirmSubmit = async () => {
+    try {
+      const tripData: Omit<Trip, 'id' | 'userId'> = {
+        departure,
+        arrival,
+        date,
+        time,
+        availableSeats: parseInt(remainingSeats),
+        vehicle: vehicleType
+      };
+
+      await tripService.createTrip(tripData);
+      router.push('/trips');
+    } catch (error) {
+      setShowError(true);
+      setErrorMessage(error instanceof Error ? error.message : 'Une erreur est survenue');
+    } finally {
+      setIsPopupOpen(false);
     }
   };
 
@@ -133,6 +141,13 @@ export default function AddTrip() {
         </div>
       </div>
       <NavBar activePage="home" />
+
+      <PopUpConfirmation
+        isOpen={isPopupOpen}
+        message="Êtes-vous sûr de vouloir créer ce trajet ?"
+        onCancel={() => setIsPopupOpen(false)}
+        onAccept={handleConfirmSubmit}
+      />
     </div>
   );
 }

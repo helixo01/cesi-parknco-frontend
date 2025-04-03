@@ -1,4 +1,5 @@
 import React from 'react';
+import { colors } from '@/styles/colors';
 
 interface PopUpConfirmationProps {
   message: string;
@@ -28,7 +29,12 @@ export const PopUpConfirmation: React.FC<PopUpConfirmationProps> = ({
           {/* Bouton Annuler */}
           <button
             onClick={onCancel}
-            className="flex-1 border-2 border-gray-400 text-gray-400 rounded-lg px-6 py-3 hover:bg-gray-700 hover:border-gray-700 transition-colors"
+            style={{ 
+              borderColor: colors.state.error, 
+              color: colors.text.white,
+              backgroundColor: `${colors.state.error}99`
+            }}
+            className="flex-1 border-2 rounded-lg px-6 py-3 hover:bg-opacity-100 transition-colors"
           >
             Annuler
           </button>
@@ -36,7 +42,12 @@ export const PopUpConfirmation: React.FC<PopUpConfirmationProps> = ({
           {/* Bouton Accepter */}
           <button
             onClick={onAccept}
-            className="flex-1 border-2 border-green-500 text-green-500 rounded-lg px-6 py-3 hover:bg-green-700 hover:border-green-700 hover:text-white transition-colors"
+            style={{ 
+              borderColor: colors.state.success, 
+              color: colors.text.white,
+              backgroundColor: `${colors.state.success}99`
+            }}
+            className="flex-1 border-2 rounded-lg px-6 py-3 hover:bg-opacity-100 transition-colors"
           >
             Accepter
           </button>
