@@ -26,22 +26,27 @@ export default function Trips() {
       return;
     }
 
+    const sortByDate = (trips: Trip[]) => {
+      return [...trips].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateA.getTime() - dateB.getTime();
+      });
+    };
+
     const fetchTrips = async () => {
       try {
         setLoading(true);
         setError(null);
         const response = await tripService.getMyTrips();
         
-        // Tri des trajets par date (plus récent en premier)
-        const sortByDate = (trips: Trip[]) => {
-          return trips.sort((a, b) => {
-            const dateA = new Date(a.date + " " + a.time);
-            const dateB = new Date(b.date + " " + b.time);
-            return dateB.getTime() - dateA.getTime();
-          });
-        };
+        // Les heures d'arrivée sont déjà calculées et stockées dans la BDD
+        const tripsWithArrivalTime = response.currentTrips.map((trip: Trip) => ({
+          ...trip,
+          // Pas besoin de recalculer l'heure d'arrivée, elle est déjà là
+        }));
 
-        setCurrentTrips(sortByDate(response.currentTrips));
+        setCurrentTrips(sortByDate(tripsWithArrivalTime));
         setHistoricTrips(sortByDate(response.historicTrips));
       } catch (err) {
         if (err instanceof Error) {

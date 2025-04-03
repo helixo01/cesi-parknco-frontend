@@ -72,7 +72,7 @@ const TrajetItem: React.FC<TrajetItemProps> = ({ trip }) => {
             <div className="font-semibold text-lg" style={{ color: colors.text.white }}>{trip.arrival}</div>
             <div className="text-sm flex items-center gap-2">
               <span style={{ color: colors.text.white }}>Arrivée :</span>
-              <span style={{ color: colors.text.white }}>{formattedTime}</span>
+              <span style={{ color: colors.text.white }}>{trip.arrivalTime}</span>
             </div>
           </div>
         </div>
