@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { colors } from "@/styles/colors";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { FiEdit2 } from "react-icons/fi";
 
 interface Option {
   value: string;
@@ -25,6 +26,10 @@ interface FormInputProps {
   // Props spécifiques pour le type number
   min?: number;
   max?: number;
+  // Props pour l'édition
+  editable?: boolean;
+  isEditing?: boolean;
+  onEditClick?: () => void;
 }
 
 export const FormInput: React.FC<FormInputProps> = ({
@@ -41,6 +46,9 @@ export const FormInput: React.FC<FormInputProps> = ({
   options = [],
   min,
   max,
+  editable = false,
+  isEditing = false,
+  onEditClick,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -50,27 +58,56 @@ export const FormInput: React.FC<FormInputProps> = ({
         return {
           backgroundColor: colors.background.input,
           textColor: colors.text.primary,
-          labelColor: colors.text.label,
-          placeholderColor: colors.text.placeholder,
+          borderColor: "transparent",
         };
       case "error":
         return {
           backgroundColor: colors.background.error,
           textColor: colors.text.primary,
-          labelColor: colors.state.error,
-          placeholderColor: colors.text.placeholder,
+          borderColor: colors.state.error,
         };
       default:
         return {
-          backgroundColor: "#FFFFFF",
-          textColor: colors.text.primary,
-          labelColor: colors.text.label,
-          placeholderColor: colors.text.placeholder,
+          backgroundColor: colors.background.default,
+          textColor: colors.text.white,
+          borderColor: "transparent",
         };
     }
   };
 
-  const { backgroundColor, textColor, labelColor, placeholderColor } = getColors();
+  const { backgroundColor, textColor, borderColor } = getColors();
+
+  const inputStyles = `
+    w-full px-4 py-2 rounded-lg
+    focus:outline-none focus:ring-2 focus:ring-primary-light
+    disabled:opacity-50 disabled:cursor-not-allowed
+    transition-colors duration-200
+  `;
+
+  const renderEditButton = () => {
+    if (!editable) return null;
+
+    return (
+      <button
+        type="button"
+        onClick={onEditClick}
+        className={`
+          absolute right-3 top-1/2 -translate-y-1/2
+          p-2 rounded-full
+          transition-all duration-200
+          ${isEditing 
+            ? 'text-primary-light bg-primary-light bg-opacity-10' 
+            : 'text-white hover:text-primary-light hover:bg-primary-light hover:bg-opacity-10'
+          }
+        `}
+      >
+        <FiEdit2 
+          size={20}
+          className="stroke-[1.5]"
+        />
+      </button>
+    );
+  };
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -83,117 +120,77 @@ export const FormInput: React.FC<FormInputProps> = ({
     }
   };
 
-  const renderInput = () => {
-    if (type === "select") {
-      return (
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          required={required}
-          disabled={disabled}
-          style={{
-            backgroundColor,
-            color: textColor,
-            fontSize: "14px",
-            height: "50px",
-            paddingRight: "16px",
-            appearance: "none",
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "right 1rem center",
-            backgroundSize: "1.5em 1.5em",
-          }}
-          className={`
-            w-full px-4 rounded-lg border
-            focus:outline-none focus:ring-2 focus:ring-${colors.primary.main}
-            ${error ? `border-${colors.state.error}` : "border-gray-300"}
-            ${error ? `focus:ring-${colors.state.error}` : `focus:border-${colors.primary.main}`}
-            ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-          `}
-        >
-          <option value="">{placeholder || "Sélectionnez une option"}</option>
-          {options.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              disabled={option.disabled}
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
-      );
-    }
-
-    return (
-      <input
-        type={type === "password" && showPassword ? "text" : type}
-        value={value}
-        onChange={type === "number" ? handleNumberChange : (e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        required={required}
-        disabled={disabled}
-        min={type === "number" ? min : undefined}
-        max={type === "number" ? max : undefined}
-        style={{
-          backgroundColor,
-          color: textColor,
-          fontSize: "14px",
-          height: "50px",
-          paddingRight: type === "password" ? "50px" : "16px"
-        }}
-        className={`
-          w-full px-4 rounded-lg border
-          focus:outline-none focus:ring-2 focus:ring-${colors.primary.main}
-          ${error ? `border-${colors.state.error}` : "border-gray-300"}
-          ${error ? `focus:ring-${colors.state.error}` : `focus:border-${colors.primary.main}`}
-          ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-        `}
-      />
-    );
-  };
-
   return (
-    <div className={`w-full ${className}`}>
-      <style jsx>{`
-        input::placeholder {
-          color: ${placeholderColor};
-          font-size: 14px;
-        }
-      `}</style>
-      <label 
-        className="block font-medium mb-2"
-        style={{ 
-          color: labelColor,
-          fontSize: "14px"
-        }}
-      >
-        {label}
+    <div className={`space-y-1 ${className}`}>
+      <label className="block text-sm font-medium" style={{ color: colors.text.label }}>
+        <span>{label}</span>
+        {required && (
+          <span className="ml-1 font-medium" style={{ color: colors.state.error }}>
+            *
+          </span>
+        )}
       </label>
+
       <div className="relative">
-        {renderInput()}
-        {type === "password" && (
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2"
-          >
-            {showPassword ? (
-              <AiOutlineEyeInvisible size={20} color={colors.text.secondary} />
-            ) : (
-              <AiOutlineEye size={20} color={colors.text.secondary} />
+        {type === "select" ? (
+          <div className="relative">
+            <select
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              disabled={disabled || (!isEditing && editable)}
+              className={inputStyles}
+              style={{
+                backgroundColor,
+                color: textColor,
+                borderColor,
+              }}
+            >
+              <option value="">Sélectionner une option</option>
+              {options.map((option) => (
+                <option key={option.value} value={option.value} disabled={option.disabled}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            {renderEditButton()}
+          </div>
+        ) : (
+          <div className="relative">
+            <input
+              type={type === "password" ? (showPassword ? "text" : "password") : type}
+              value={value}
+              onChange={type === "number" ? handleNumberChange : (e) => onChange(e.target.value)}
+              placeholder={placeholder}
+              disabled={disabled || (!isEditing && editable)}
+              min={min}
+              max={max}
+              className={inputStyles}
+              style={{
+                backgroundColor,
+                color: textColor,
+                borderColor,
+              }}
+            />
+            {type === "password" && (
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+              >
+                {showPassword ? (
+                  <AiOutlineEyeInvisible size={20} />
+                ) : (
+                  <AiOutlineEye size={20} />
+                )}
+              </button>
             )}
-          </button>
+            {renderEditButton()}
+          </div>
+        )}
+        {error && (
+          <p className="mt-1 text-sm text-red-500">{error}</p>
         )}
       </div>
-      {error && (
-        <p 
-          className="mt-1 text-sm"
-          style={{ color: colors.state.error }}
-        >
-          {error}
-        </p>
-      )}
     </div>
   );
-}; 
+};

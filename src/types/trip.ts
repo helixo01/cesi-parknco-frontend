@@ -13,9 +13,9 @@ export interface TripFormData {
   arrival: string;
   date: string;
   time: string;
-  selectedVehicle: Vehicle | null;
+  selectedVehicle?: string;
   remainingSeats: string;
-  vehicleType: VehicleType;
+  vehicleType: string;
 }
 
 export interface TripFormErrors {
@@ -24,4 +24,18 @@ export interface TripFormErrors {
   date?: string;
   time?: string;
   remainingSeats?: string;
-} 
+  vehicleType?: string;
+}
+
+export interface Trip {
+  id?: string;
+  userId?: string;
+  departure: string;
+  arrival: string;
+  date: string;
+  time: string;
+  availableSeats: number;
+  vehicle?: string;
+  status?: 'pending' | 'active' | 'completed' | 'cancelled';
+  createdAt?: string;
+}

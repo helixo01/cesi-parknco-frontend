@@ -1,4 +1,4 @@
-import { FormInput } from "@/components/global/FormInput";
+import { TextInput } from "@/components/global/TextInput";
 import { Logo } from "@/components/global/Logo";
 import { Button } from "@/components/global/Button";
 import { Division } from "@/components/global/Division";
@@ -22,7 +22,7 @@ export default function Login() {
             type={formState.infoType}
             show={formState.showInfo}
           />
-          <FormInput
+          <TextInput
             label="Email"
             type="email"
             placeholder="Entrez votre email"
@@ -31,7 +31,7 @@ export default function Login() {
             required
           />
           <div className="space-y-2">
-            <FormInput
+            <TextInput
               label="Mot de passe"
               type="password"
               placeholder="Entrez votre mot de passe"

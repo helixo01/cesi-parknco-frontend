@@ -2,14 +2,15 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
-import { FormInput } from "@/components/global/FormInput";
-import { CheckboxInput } from "@/components/global/CheckboxInput";
+import { TextInput } from "@/components/global/TextInput";
 import { Logo } from "@/components/global/Logo";
 import { Button } from "@/components/global/Button";
 import { Division } from "@/components/global/Division";
 import { Info } from "@/components/global/Info";
 import { HelpText } from "@/components/global/HelpText";
 import { colors } from "@/styles/colors";
+import { authService } from "@/services/auth";
+import { CheckboxInput } from "@/components/global/CheckboxInput";
 
 interface FormData {
   nom: string;
@@ -56,9 +57,9 @@ export default function Inscription() {
       return false;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@(viacesi|cesi)\.fr$/;
     if (!emailRegex.test(formData.email)) {
-      setInfoMessage('L\'email n\'est pas valide');
+      setInfoMessage('L\'email doit être une adresse CESI valide (contenant @viacesi.fr ou @cesi.fr)');
       setInfoType('error');
       setShowInfo(true);
       return false;
@@ -93,7 +94,7 @@ export default function Inscription() {
     }
 
     if (!formData.acceptConditions) {
-      setInfoMessage('Vous devez accepter les conditions générales');
+      setInfoMessage('Vous devez accepter les conditions générales d\'utilisation');
       setInfoType('error');
       setShowInfo(true);
       return false;
@@ -102,32 +103,34 @@ export default function Inscription() {
     return true;
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowInfo(false);
-
-    if (!validateForm()) {
-      return;
-    }
+    
+    if (!validateForm()) return;
 
     try {
-      // TODO: Implémenter l'appel API pour créer le compte
-      console.log('Données du formulaire:', formData);
-      setInfoMessage('Compte créé avec succès !');
+      await authService.register({
+        nom: formData.nom,
+        prenom: formData.prenom,
+        email: formData.email,
+        motDePasse: formData.motDePasse,
+      });
+
+      setInfoMessage('Inscription réussie ! Redirection vers la page de connexion...');
       setInfoType('success');
       setShowInfo(true);
-      // Redirection après un court délai pour montrer le message de succès
+
       setTimeout(() => {
         router.push('/login');
       }, 2000);
-    } catch (err) {
+    } catch (error) {
       setInfoMessage('Une erreur est survenue lors de l\'inscription');
       setInfoType('error');
       setShowInfo(true);
     }
   };
 
-  const updateField = (field: keyof FormData, value: string) => {
+  const updateField = (field: keyof FormData, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -149,54 +152,58 @@ export default function Inscription() {
             show={showInfo}
           />
           <form onSubmit={handleSubmit} className="space-y-8" noValidate>
-            <FormInput
+            <TextInput
               label="Nom"
               type="text"
               placeholder="Entrez votre nom"
               value={formData.nom}
               onChange={(value) => updateField("nom", value)}
+              required={true}
             />
-            <FormInput
+            <TextInput
               label="Prénom"
               type="text"
               placeholder="Entrez votre prénom"
               value={formData.prenom}
               onChange={(value) => updateField("prenom", value)}
+              required={true}
             />
-            <FormInput
+            <TextInput
               label="Email"
               type="email"
               placeholder="Entrez votre email"
               value={formData.email}
               onChange={(value) => updateField("email", value)}
+              required={true}
             />
-            <FormInput
+            <TextInput
               label="Mot de passe"
               type="password"
               placeholder="Entrez votre mot de passe"
               value={formData.motDePasse}
               onChange={(value) => updateField("motDePasse", value)}
+              required={true}
             />
-            <FormInput
+            <TextInput
               label="Confirmer le mot de passe"
               type="password"
               placeholder="Confirmez votre mot de passe"
               value={formData.confirmationMotDePasse}
               onChange={(value) => updateField("confirmationMotDePasse", value)}
+              required={true}
             />
             <CheckboxInput
               label="J'accepte les"
               linkText="conditions générales d'utilisation"
               linkHref="/conditions-generales"
               checked={formData.acceptConditions}
-              onChange={(checked) => updateField("acceptConditions", checked.toString())}
+              onChange={(checked) => updateField("acceptConditions", checked)}
               required
               error={!formData.acceptConditions && showInfo ? "Vous devez accepter les conditions générales" : undefined}
             />
             <Button
               text="S'inscrire"
               variant="primary"
-              onClick={() => handleSubmit(new Event('submit') as unknown as FormEvent<HTMLFormElement>)}
             />
           </form>
           <div className="space-y-4 text-center">
