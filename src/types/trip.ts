@@ -23,6 +23,7 @@ export interface TripFormErrors {
   arrival?: string;
   date?: string;
   time?: string;
+  selectedVehicle?: string;
   remainingSeats?: string;
   vehicleType?: string;
 }
@@ -36,6 +37,9 @@ export interface Trip {
   time: string;
   availableSeats: number;
   vehicle?: string;
+  distance: string;  
+  duration: string;  
+  arrivalTime: string;
   status?: 'pending' | 'active' | 'completed' | 'cancelled';
   createdAt?: string;
 }
