@@ -1,4 +1,5 @@
-import { TextInput } from "@/components/global/TextInput";
+// src/pages/login.tsx
+import { FormInput } from "@/components/global/TextInput";
 import { Logo } from "@/components/global/Logo";
 import { Button } from "@/components/global/Button";
 import { Division } from "@/components/global/Division";
@@ -22,22 +23,24 @@ export default function Login() {
             type={formState.infoType}
             show={formState.showInfo}
           />
-          <TextInput
+          <FormInput
             label="Email"
             type="email"
             placeholder="Entrez votre email"
             value={formState.email}
             onChange={(value) => updateField("email", value)}
             required
+            variant="light"
           />
           <div className="space-y-2">
-            <TextInput
+            <FormInput
               label="Mot de passe"
               type="password"
               placeholder="Entrez votre mot de passe"
               value={formState.password}
               onChange={(value) => updateField("password", value)}
               required
+              variant="light"
             />
             <HelpText
               text="Mot de passe oublié ?"
@@ -73,4 +76,4 @@ export default function Login() {
       </div>
     </div>
   );
-} 
+}

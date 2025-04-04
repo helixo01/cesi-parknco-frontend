@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Header } from "@/components/global/Header";
 import { Division } from "@/components/global/Division";
+<<<<<<< Updated upstream
 import { FormInput } from "@/components/global/FormInput";
+=======
+import { FormInput } from "@/components/global/TextInput";
+>>>>>>> Stashed changes
 import { ProfilPic } from "@/components/global/ProfilPic";
 import { Button } from "@/components/global/Button";
 import { colors } from "@/styles/colors";
