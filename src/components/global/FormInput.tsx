@@ -138,11 +138,15 @@ export const FormInput: React.FC<FormInputProps> = ({
               value={value}
               onChange={(e) => onChange(e.target.value)}
               disabled={disabled || (!isEditing && editable)}
-              className={inputStyles}
+              className={`${inputStyles} appearance-none pr-12`}
               style={{
                 backgroundColor,
                 color: textColor,
                 borderColor,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23000000'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E")`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 2.5rem center",
+                backgroundSize: "1.5em 1.5em",
               }}
             >
               <option value="">Sélectionner une option</option>

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { AiOutlineCamera } from "react-icons/ai";
 import { colors } from "@/styles/colors";
 import { RxAvatar } from "react-icons/rx";
+import { API_URL } from "@/config/api";
 
 interface ProfilPicProps {
   src?: string | null;
@@ -41,6 +42,9 @@ export const ProfilPic: React.FC<ProfilPicProps> = ({
     }
   };
 
+  // Convertir l'URL relative en URL complète si nécessaire
+  const imageUrl = src?.startsWith('http') ? src : src ? `${API_URL}${src}` : null;
+
   return (
     <div 
       className={`relative ${shapeClass} overflow-hidden ${className} ${editable ? 'cursor-pointer group' : ''}`}
@@ -48,17 +52,20 @@ export const ProfilPic: React.FC<ProfilPicProps> = ({
       style={{ 
         backgroundColor: colors.background.default,
         width: width,
-        height: height
+        height: height,
+        position: 'relative'
       }}
     >
-      {src ? (
+      {imageUrl ? (
         <Image
-          src={src}
+          src={imageUrl}
           alt={alt}
-          width={width}
-          height={height}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover"
+          priority
           onError={(e) => {
+            console.error('Erreur de chargement de l\'image:', imageUrl);
             const target = e.target as HTMLImageElement;
             target.src = "/pp.webp";
           }}

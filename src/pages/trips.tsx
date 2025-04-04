@@ -44,13 +44,18 @@ export default function Trips() {
   const compareDatesWithTime = (tripA: Trip, tripB: Trip) => {
     const dateA = new Date(tripA.date);
     const dateB = new Date(tripB.date);
+    const [hoursA, minutesA] = tripA.time.split(':').map(Number);
+    const [hoursB, minutesB] = tripB.time.split(':').map(Number);
     
-    if (dateA.getTime() === dateB.getTime()) {
-      const [hoursA, minutesA] = tripA.time.split(':').map(Number);
-      const [hoursB, minutesB] = tripB.time.split(':').map(Number);
-      return (hoursB * 60 + minutesB) - (hoursA * 60 + minutesA);
+    dateA.setHours(hoursA, minutesA, 0, 0);
+    dateB.setHours(hoursB, minutesB, 0, 0);
+    
+    // Pour les trajets à venir, on trie du plus proche au plus lointain
+    if (activeFilter === 'upcoming') {
+      return dateA.getTime() - dateB.getTime();
     }
     
+    // Pour les autres cas (passés ou tous), on garde le tri du plus récent au plus ancien
     return dateB.getTime() - dateA.getTime();
   };
 

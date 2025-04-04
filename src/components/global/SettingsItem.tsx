@@ -28,56 +28,75 @@ export const SettingsItem: React.FC<SettingsItemProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`w-full px-4 py-3 flex items-center justify-between text-left transition-all duration-200 ${className}`}
+      className={`
+        w-full flex items-center rounded-xl
+        transition-all duration-300 ease-in-out
+        transform hover:scale-[1.02]
+        ${className}
+      `}
       style={{
         ...style,
-        borderRadius: "0.75rem",
-        backgroundColor: style?.backgroundColor || colors.background.navbar,
+        backgroundColor: style?.backgroundColor || colors.components.settingsItem.background,
       }}
     >
-      <div className="flex items-center space-x-4">
-        <div style={{ color: colors.primary.light }}>
-          <Icon className="w-6 h-6" />
-        </div>
-        <div className="flex-grow">
-          <div className="flex items-center">
-            {prefix && (
-              <span 
-                className="mr-2 font-medium" 
-                style={{ color: colors.primary.light }}
-              >
-                {prefix}
-              </span>
-            )}
+      <div 
+        className="flex items-center justify-center rounded-l-xl mr-4"
+        style={{
+          width: "64px",
+          height: "64px",
+          backgroundColor: colors.components.settingsItem.icon.background,
+        }}
+      >
+        <Icon 
+          className="transition-transform duration-300 group-hover:scale-110"
+          size={28} 
+          color={colors.components.settingsItem.icon.color}
+        />
+      </div>
+
+      <div className="flex-grow py-3 pr-4">
+        <div className="flex items-center">
+          {prefix && (
             <span 
-              className="font-semibold text-base" 
-              style={{ color: colors.text.label }}
-            >
-              {label}
-            </span>
-          </div>
-          {(description || subtitle) && (
-            <p 
-              className="text-sm mt-1" 
+              className="mr-2 font-medium" 
               style={{ color: colors.text.white }}
             >
-              {description || subtitle}
-            </p>
+              {prefix}
+            </span>
           )}
-          {progress !== undefined && (
-            <div className="mt-2">
-              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ 
-                    width: `${progress}%`,
-                    backgroundColor: colors.primary.light
-                  }}
-                />
-              </div>
-            </div>
-          )}
+          <span 
+            className="font-semibold text-base"
+            style={{ color: colors.text.white }}
+          >
+            {label}
+          </span>
         </div>
+
+        {(description || subtitle) && (
+          <p 
+            className="text-sm mt-1 opacity-90"
+            style={{ color: colors.text.white }}
+          >
+            {description || subtitle}
+          </p>
+        )}
+
+        {progress !== undefined && (
+          <div className="mt-3">
+            <div 
+              className="h-2 rounded-full overflow-hidden"
+              style={{ backgroundColor: `${colors.primary.light}20` }}
+            >
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ 
+                  width: `${progress}%`,
+                  backgroundColor: colors.primary.light
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </button>
   );
