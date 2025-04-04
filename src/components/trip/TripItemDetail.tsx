@@ -4,6 +4,8 @@ import { Star } from '@/components/global/Star';
 import { FaRegCalendarAlt } from 'react-icons/fa';
 import { HiOutlineUserAdd } from 'react-icons/hi';
 import PopUpConfirmation from '@/components/global/PopUpConfirmation';
+import { tripService } from '@/services/tripService';
+import { toast } from 'react-hot-toast';
 
 interface TripItemDetailProps {
   id: string;
@@ -16,11 +18,13 @@ interface TripItemDetailProps {
   toAddress: string;
   duration: string;
   userName: string;
-  userImage: string;
+  userImage?: string | null;
   rating: number;
+  onRequestSent?: () => void;
 }
 
 const TripItemDetail: React.FC<TripItemDetailProps> = ({
+  id,
   startDate,
   startTime,
   endTime,
@@ -32,17 +36,28 @@ const TripItemDetail: React.FC<TripItemDetailProps> = ({
   userName,
   userImage,
   rating,
+  onRequestSent
 }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePostuler = () => {
     setIsPopupOpen(true);
   };
 
-  const handleAccept = () => {
-    // Ici, ajoutez la logique pour traiter la candidature
-    console.log('Candidature acceptée');
-    setIsPopupOpen(false);
+  const handleAccept = async () => {
+    try {
+      setIsLoading(true);
+      await tripService.createTripRequest(id);
+      toast.success('Votre demande a été envoyée avec succès !');
+      onRequestSent?.();
+    } catch (error) {
+      console.error('Erreur lors de la création de la demande:', error);
+      toast.error('Une erreur est survenue lors de l\'envoi de votre demande');
+    } finally {
+      setIsLoading(false);
+      setIsPopupOpen(false);
+    }
   };
 
   const formattedDate = startDate.toLocaleDateString('fr-FR', {
@@ -100,10 +115,13 @@ const TripItemDetail: React.FC<TripItemDetailProps> = ({
             {/* Bouton Postuler */}
             <button 
               onClick={handlePostuler}
-              className="border-2 border-green-500 rounded-lg px-6 py-3 flex flex-col items-center hover:bg-green-700 hover:border-green-700 transition-colors min-w-[120px]"
+              disabled={isLoading}
+              className="border-2 border-green-500 rounded-lg px-6 py-3 flex flex-col items-center hover:bg-green-700 hover:border-green-700 transition-colors min-w-[120px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <HiOutlineUserAdd className="text-2xl text-green-500 mb-1" />
-              <span className="text-sm text-green-500 font-medium">Postuler</span>
+              <span className="text-sm text-green-500 font-medium">
+                {isLoading ? 'Envoi...' : 'Postuler'}
+              </span>
             </button>
           </div>
         </div>

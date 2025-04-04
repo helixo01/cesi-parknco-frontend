@@ -105,5 +105,17 @@ export const colors = {
     logo: {
       background: "#0D1A2A",
     },
+    // Search
+    search: {
+      form: {
+        background: "#FFFFFF",
+        shadow: "rgba(0, 0, 0, 0.1)",
+      },
+      results: {
+        count: {
+          text: "#111827",
+        },
+      },
+    },
   },
 } as const; 

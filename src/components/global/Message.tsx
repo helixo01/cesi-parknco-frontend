@@ -1,113 +1,141 @@
 import React, { useState } from 'react';
-import { ProfilPic } from './ProfilPic';
 import { Division } from './Division';
 import PopUpMessage from './PopUpMessage';
+import { colors } from '@/styles/colors';
+
+type Status = 'pending' | 'accepted' | 'rejected';
 
 interface MessageProps {
   userName: string;
-  userImage?: string;
+  userImage?: string | null;
   from: string;
   to: string;
   date: string;
   time: string;
+  status?: Status;
+  onAccept?: () => void;
+  onReject?: () => void;
+  showActions?: boolean;
 }
 
-// Exemple de test avec un long prénom
-const TestMessage = () => {
+const StatusBadge: React.FC<{ status: Status }> = ({ status }) => {
+  const styles = {
+    pending: 'bg-yellow-500/20 text-yellow-500',
+    accepted: 'bg-green-500/20 text-green-500',
+    rejected: 'bg-red-500/20 text-red-500'
+  };
+
+  const text = {
+    pending: 'En attente',
+    accepted: 'Acceptée',
+    rejected: 'Refusée'
+  };
+
   return (
-    <Message
-      userName="Jean-Christophe-Marie-Emmanuel-Alexandre-Maximilien-François-Antoine de Saint-Exupéry de la Rochefoucauld"
-      from="123 Avenue des Champs-Élysées, 75008 Paris, France, Bâtiment B, 3ème étage, Porte droite"
-      to="456 Boulevard de la République, 69001 Lyon, France, Résidence Les Magnolias, Entrée A, 5ème étage"
-      date="Vendredi 15 Décembre 2023"
-      time="14h30"
-    />
+    <span className={`inline-block px-4 py-1.5 rounded-lg font-medium text-sm ${styles[status]}`}>
+      {text[status]}
+    </span>
   );
 };
 
-const Message: React.FC<MessageProps> = ({
-  userName,
-  userImage = "https://ui-avatars.com/api/?name=" + encodeURIComponent(userName) + "&background=0D8ABC&color=fff",
-  from,
-  to,
+const InfoField: React.FC<{ label: string; value: string; className?: string }> = ({ 
+  label, 
+  value,
+  className = "" 
+}) => (
+  <div className={`flex flex-col ${className}`}>
+    <span className="text-xs text-gray-400 mb-1">{label}</span>
+    <span className="text-sm text-white font-medium leading-tight">{value}</span>
+  </div>
+);
+
+const DateTimeField: React.FC<{ date: string; time: string; className?: string }> = ({
   date,
   time,
-}) => {
+  className = ""
+}) => (
+  <div className={`flex flex-col ${className}`}>
+    <span className="text-xs text-gray-400 mb-1">Date et Heure</span>
+    <div className="flex flex-col space-y-1">
+      <span className="text-sm text-white font-medium leading-tight">{date}</span>
+      <span className="text-sm text-white font-medium leading-tight">{time}</span>
+    </div>
+  </div>
+);
+
+const MessageContent: React.FC<MessageProps> = ({ userName, from, to, date, time, status }) => (
+  <div className="bg-[#1A2D3E] rounded-lg p-4 w-full max-w-xl hover:bg-[#243447] transition-colors duration-200">
+    <div className="flex flex-col space-y-4">
+      {/* En-tête */}
+      <div className="flex flex-col items-center space-y-2">
+        <span className="text-base text-white font-medium">{userName}</span>
+        {status && <StatusBadge status={status} />}
+      </div>
+
+      {/* Ligne de séparation */}
+      <div className="border-t border-gray-700 my-2"></div>
+
+      {/* Trajet et Date/Heure */}
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <InfoField 
+            label="Départ" 
+            value={from} 
+            className="bg-[#0A1D2E] rounded-lg p-3"
+          />
+          <InfoField 
+            label="Arrivée" 
+            value={to}
+            className="bg-[#0A1D2E] rounded-lg p-3" 
+          />
+        </div>
+        <DateTimeField 
+          date={date}
+          time={time}
+          className="bg-[#0A1D2E] rounded-lg p-3"
+        />
+      </div>
+    </div>
+  </div>
+);
+
+const Message: React.FC<MessageProps> = (props) => {
   const [isPopUpOpen, setIsPopUpOpen] = useState(false);
 
   const handleAccept = () => {
-    console.log('Trajet accepté');
+    props.onAccept?.();
     setIsPopUpOpen(false);
   };
 
   const handleRefuse = () => {
-    console.log('Trajet refusé');
+    props.onReject?.();
     setIsPopUpOpen(false);
+  };
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setIsPopUpOpen(false);
+    }
   };
 
   return (
     <>
       <div onClick={() => setIsPopUpOpen(true)} className="cursor-pointer">
         <Division variant="default" className="p-2">
-          <div className="bg-[#1A2D3E] rounded-lg p-4 w-full max-w-xl">
-            <div className="flex gap-4">
-              {/* Photo de profil et nom */}
-              <div className="flex flex-col items-center min-w-[80px]">
-                <ProfilPic
-                  src={userImage}
-                  alt={userName}
-                  width={65}
-                  height={65}
-                />
-                <span className="text-sm text-white mt-2 text-center font-medium break-words w-full px-1">{userName}</span>
-              </div>
-
-              {/* Informations du trajet */}
-              <div className="flex-1 min-w-0">
-                <div className="space-y-3">
-                  {/* Section départ */}
-                  <div className="flex flex-col">
-                    <span className="text-xs text-white mb-1">De</span>
-                    <span className="text-base text-white break-words font-medium leading-tight">{from}</span>
-                  </div>
-
-                  {/* Section arrivée */}
-                  <div className="flex flex-col">
-                    <span className="text-xs text-white mb-1">À</span>
-                    <span className="text-base text-white break-words font-medium leading-tight">{to}</span>
-                  </div>
-
-                  {/* Section date */}
-                  <div className="flex flex-col">
-                    <span className="text-xs text-white mb-1">Date</span>
-                    <span className="text-base text-white font-medium leading-tight">{date}</span>
-                  </div>
-
-                  {/* Section heure */}
-                  <div className="flex flex-col">
-                    <span className="text-xs text-white mb-1">Heure</span>
-                    <span className="text-base text-white font-medium leading-tight">{time}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <MessageContent {...props} />
         </Division>
       </div>
 
-      {/* PopUp Modal */}
       {isPopUpOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={handleOverlayClick}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
             <PopUpMessage
-              userName={userName}
-              userImage={userImage}
-              from={from}
-              to={to}
-              date={date}
-              time={time}
-              onAccept={handleAccept}
-              onRefuse={handleRefuse}
+              {...props}
+              onAccept={props.showActions ? handleAccept : undefined}
+              onRefuse={props.showActions ? handleRefuse : undefined}
             />
           </div>
         </div>

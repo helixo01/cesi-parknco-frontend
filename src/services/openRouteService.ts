@@ -30,9 +30,11 @@ const API_KEY = process.env.NEXT_PUBLIC_OPENROUTESERVICE_API_KEY;
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
-    'Content-Type': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8'
-  }
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'Authorization': API_KEY
+  },
+  timeout: 10000 // 10 secondes
 });
 
 const checkApiKey = () => {
@@ -46,10 +48,9 @@ export const openRouteService = {
     try {
       checkApiKey();
 
-      const response = await axiosInstance.get<GeocodingResponse>('/geocode/search', {
+      const response = await axiosInstance.get<GeocodingResponse>('/geocode/autocomplete', {
         params: {
-          api_key: API_KEY,
-          text: encodeURIComponent(query),
+          text: query,
           boundary_country: 'FR',
           size: 5,
           limit: 5
@@ -74,6 +75,10 @@ export const openRouteService = {
         });
     } catch (error) {
       console.error('Error getting suggestions:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Response:', error.response?.data);
+        console.error('Status:', error.response?.status);
+      }
       return [];
     }
   },
@@ -86,17 +91,15 @@ export const openRouteService = {
 
       // Convertir les adresses en coordonnées (limité à la France)
       const [originResponse, destinationResponse] = await Promise.all([
-        axiosInstance.get<GeocodingResponse>('/geocode/search', {
+        axiosInstance.get<GeocodingResponse>('/geocode/autocomplete', {
           params: {
-            api_key: API_KEY,
-            text: encodeURIComponent(origin),
+            text: origin,
             boundary_country: 'FR'
           }
         }),
-        axiosInstance.get<GeocodingResponse>('/geocode/search', {
+        axiosInstance.get<GeocodingResponse>('/geocode/autocomplete', {
           params: {
-            api_key: API_KEY,
-            text: encodeURIComponent(destination),
+            text: destination,
             boundary_country: 'FR'
           }
         })
@@ -123,7 +126,6 @@ export const openRouteService = {
       // Calculer l'itinéraire
       const response = await axiosInstance.get('/v2/directions/driving-car', {
         params: {
-          api_key: API_KEY,
           start: `${originCoords[0]},${originCoords[1]}`,
           end: `${destinationCoords[0]},${destinationCoords[1]}`
         }
@@ -145,6 +147,11 @@ export const openRouteService = {
       };
     } catch (error: unknown) {
       console.error('Error calculating route:', error);
+      
+      if (axios.isAxiosError(error)) {
+        console.error('Response:', error.response?.data);
+        console.error('Status:', error.response?.status);
+      }
       
       if (error instanceof Error) {
         throw new Error(`Erreur lors du calcul du trajet: ${error.message}`);

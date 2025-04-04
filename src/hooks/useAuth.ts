@@ -1,16 +1,37 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '@/config/api';
 
-export const useAuth = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+interface User {
+  _id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
+
+interface AuthState {
+  isAuthenticated: boolean;
+  loading: boolean;
+  user: User | null;
+}
+
+export const useAuth = (): AuthState => {
+  const [state, setState] = useState<AuthState>({
+    isAuthenticated: false,
+    loading: true,
+    user: null
+  });
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          setIsAuthenticated(false);
+          setState({
+            isAuthenticated: false,
+            loading: false,
+            user: null
+          });
           return;
         }
 
@@ -22,24 +43,32 @@ export const useAuth = () => {
         });
 
         if (response.ok) {
-          setIsAuthenticated(true);
+          const userData = await response.json();
+          setState({
+            isAuthenticated: true,
+            loading: false,
+            user: userData.user
+          });
         } else {
           localStorage.removeItem('token');
-          setIsAuthenticated(false);
+          setState({
+            isAuthenticated: false,
+            loading: false,
+            user: null
+          });
         }
       } catch (error) {
         localStorage.removeItem('token');
-        setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
+        setState({
+          isAuthenticated: false,
+          loading: false,
+          user: null
+        });
       }
     };
 
     checkAuth();
   }, []);
 
-  return {
-    isAuthenticated,
-    loading
-  };
+  return state;
 };
