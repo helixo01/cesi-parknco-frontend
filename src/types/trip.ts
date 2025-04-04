@@ -28,18 +28,32 @@ export interface TripFormErrors {
   vehicleType?: string;
 }
 
+export interface TripRequest {
+  _id: string;
+  tripId: string;
+  userId: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  createdAt: string;
+}
+
 export interface Trip {
-  id?: string;
-  userId?: string;
+  _id: string;
+  userId: string;
   departure: string;
   arrival: string;
   date: string;
   time: string;
   availableSeats: number;
-  vehicle?: string;
-  distance: string;  
-  duration: string;  
+  vehicle: string;
+  distance: string;
+  duration: string;
+  status: string;
   arrivalTime: string;
-  status?: 'pending' | 'active' | 'completed' | 'cancelled';
-  createdAt?: string;
+  requests: TripRequest[];
+  createdAt: string;
+}
+
+export interface TripResponse {
+  currentTrips: Trip[];
+  pastTrips: Trip[];
 }
