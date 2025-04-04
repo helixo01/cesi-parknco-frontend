@@ -34,13 +34,11 @@ export default function SearchTrip() {
     try {
       setError(null);
 
-      // Vérifier les champs requis
       if (!departure || !arrival || !date || !time) {
         setError('Veuillez remplir tous les champs');
         return;
       }
 
-      // Rechercher les trajets
       const searchParams = {
         departure,
         arrival,
@@ -49,9 +47,9 @@ export default function SearchTrip() {
       };
 
       const trips = await tripService.searchTrips(searchParams);
+      console.log('Trajets trouvés:', JSON.stringify(trips, null, 2));
       setTrips(trips);
 
-      // Afficher un message si aucun trajet n'est trouvé
       if (trips.length === 0) {
         setError('Aucun trajet trouvé');
       }
@@ -60,6 +58,23 @@ export default function SearchTrip() {
     }
   };
 
+<<<<<<< Updated upstream
+=======
+  const handleTripClick = (trip: Trip) => {
+    console.log('Trip sélectionné (détaillé):', JSON.stringify(trip, null, 2));
+    console.log('Driver info:', trip.driver);
+    setSelectedTrip(trip);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedTrip(null);
+  };
+
+  const handleRequestSent = () => {
+    handleCloseModal();
+  };
+
+>>>>>>> Stashed changes
   return (
     <div>
       <Header 
@@ -151,8 +166,33 @@ export default function SearchTrip() {
               </div>
             </div>
           )}
+<<<<<<< Updated upstream
         </div>
       </main>
+=======
+        </Division>
+      </div>
+
+      <Modal isOpen={!!selectedTrip} onClose={handleCloseModal}>
+        {selectedTrip && selectedTrip.driver && (
+          <TripItemDetail
+            id={selectedTrip._id}
+            startDate={selectedTrip.date}
+            startTime={selectedTrip.time}
+            endTime={selectedTrip.arrivalTime}
+            from={selectedTrip.departure}
+            fromAddress={selectedTrip.departure}
+            to={selectedTrip.arrival}
+            toAddress={selectedTrip.arrival}
+            duration={selectedTrip.duration}
+            driver={selectedTrip.driver}
+            onRequestSent={handleRequestSent}
+          />
+        )}
+      </Modal>
+
+      <NavBar activePage="home" />
+>>>>>>> Stashed changes
     </div>
   );
 }

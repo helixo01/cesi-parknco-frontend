@@ -231,8 +231,9 @@ export const tripService = {
         throw new Error(error.message || 'Erreur lors de la recherche des trajets');
       }
 
-      const trips = await response.json();
-      return trips;
+      const data = await response.json();
+      console.log('Données reçues du backend:', data);
+      return data;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Erreur lors de la recherche des trajets : ${error.message}`);

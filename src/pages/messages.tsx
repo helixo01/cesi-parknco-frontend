@@ -37,8 +37,24 @@ interface TripRequest {
     firstName: string;
     lastName: string;
   };
+  driver?: {
+    firstName: string;
+    lastName: string;
+    profilePicture?: string;
+  };
 }
 
+<<<<<<< Updated upstream
+=======
+const formatUserName = (user?: { firstName?: string; lastName?: string }) => {
+  if (!user) return 'Utilisateur inconnu';
+  if (!user.firstName && !user.lastName) return 'Utilisateur inconnu';
+  if (user.firstName && !user.lastName) return user.firstName;
+  if (!user.firstName && user.lastName) return user.lastName;
+  return `${user.firstName} ${user.lastName}`;
+};
+
+>>>>>>> Stashed changes
 export default function Messages() {
   const [driverRequests, setDriverRequests] = useState<TripRequest[]>([]);
   const [passengerRequests, setPassengerRequests] = useState<TripRequest[]>([]);
@@ -68,8 +84,8 @@ export default function Messages() {
       console.log('Demandes conducteur:', driverData);
       
       // Transformer les données pour les demandes conducteur
-      const formattedDriverRequests = driverData.flatMap((trip: Trip) => 
-        trip.requests.map(request => ({
+      const formattedDriverRequests = driverData.flatMap((trip: any) => 
+        trip.requests.map((request: any) => ({
           _id: request._id,
           tripId: trip._id,
           userId: request.userId,
@@ -79,7 +95,8 @@ export default function Messages() {
             arrival: trip.arrival,
             date: trip.date,
             time: trip.time
-          }
+          },
+          user: request.user
         }))
       );
       setDriverRequests(formattedDriverRequests);
@@ -89,8 +106,13 @@ export default function Messages() {
       console.log('Demandes passager brutes:', passengerData);
       
       // Transformer les données pour les demandes passager
+<<<<<<< Updated upstream
       const formattedPassengerRequests = passengerData.map((trip: Trip) => {
         const request = trip.requests[0]; // On sait qu'il n'y a qu'une seule demande (la nôtre)
+=======
+      const formattedPassengerRequests = passengerData.map((trip: any) => {
+        const request = trip.requests[0];
+>>>>>>> Stashed changes
         return {
           _id: request._id,
           tripId: trip._id,
@@ -101,7 +123,8 @@ export default function Messages() {
             arrival: trip.arrival,
             date: trip.date,
             time: trip.time
-          }
+          },
+          driver: trip.driver
         } as TripRequest;
       });
 
@@ -208,6 +231,7 @@ export default function Messages() {
               ) : (
                 <div className="space-y-4">
                   {passengerRequests.map((request) => (
+<<<<<<< Updated upstream
                     <div key={request._id} className="border rounded-lg p-4">
                       <div className="flex justify-between items-start">
                         <div>
@@ -231,6 +255,18 @@ export default function Messages() {
                         </div>
                       </div>
                     </div>
+=======
+                    <Message
+                      key={request._id}
+                      userName={formatUserName(request.driver)}
+                      userImage={request.driver?.profilePicture}
+                      from={request.trip.departure}
+                      to={request.trip.arrival}
+                      date={formatDate(request.trip.date)}
+                      time={request.trip.time}
+                      status={request.status}
+                    />
+>>>>>>> Stashed changes
                   ))}
                 </div>
               )}

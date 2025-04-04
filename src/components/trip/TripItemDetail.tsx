@@ -7,7 +7,7 @@ import PopUpConfirmation from '@/components/global/PopUpConfirmation';
 
 interface TripItemDetailProps {
   id: string;
-  startDate: Date;
+  startDate: string;
   startTime: string;
   endTime: string;
   from: string;
@@ -15,9 +15,19 @@ interface TripItemDetailProps {
   to: string;
   toAddress: string;
   duration: string;
+<<<<<<< Updated upstream
   userName: string;
   userImage: string;
   rating: number;
+=======
+  driver: {
+    firstName: string;
+    lastName: string;
+    profilePicture?: string | null;
+    rating?: number;
+  };
+  onRequestSent?: () => void;
+>>>>>>> Stashed changes
 }
 
 const TripItemDetail: React.FC<TripItemDetailProps> = ({
@@ -29,9 +39,14 @@ const TripItemDetail: React.FC<TripItemDetailProps> = ({
   to,
   toAddress,
   duration,
+<<<<<<< Updated upstream
   userName,
   userImage,
   rating,
+=======
+  driver,
+  onRequestSent
+>>>>>>> Stashed changes
 }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -45,11 +60,13 @@ const TripItemDetail: React.FC<TripItemDetailProps> = ({
     setIsPopupOpen(false);
   };
 
-  const formattedDate = startDate.toLocaleDateString('fr-FR', {
+  const formattedDate = new Date(startDate).toLocaleDateString('fr-FR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric'
   });
+
+  const formattedName = `${driver.firstName} ${driver.lastName}`;
 
   return (
     <>
@@ -91,12 +108,12 @@ const TripItemDetail: React.FC<TripItemDetailProps> = ({
           {/* Partie profil à droite */}
           <div className="flex flex-col items-center justify-center space-y-4 min-w-[140px] h-full py-16">
             <ProfilPic
-              src={userImage}
-              alt={userName}
+              src={driver.profilePicture}
+              alt={formattedName}
               className="w-16 h-16"
             />
-            <span className="text-sm text-center">{userName}</span>
-            <Star rating={rating} />
+            <span className="text-sm text-center">{formattedName}</span>
+            <Star rating={driver.rating || 0} />
             {/* Bouton Postuler */}
             <button 
               onClick={handlePostuler}

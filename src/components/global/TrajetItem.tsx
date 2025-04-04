@@ -38,10 +38,12 @@ const TrajetItem: React.FC<TrajetItemProps> = ({ trip }) => {
     <div className="p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow relative" style={{ backgroundColor: colors.background.default }}>
       <div className="flex flex-col space-y-3">
         {/* En-tête avec la date et l'icône de statut */}
-        <div className="flex items-center justify-center gap-4 text-base font-medium" style={{ color: colors.components.titre.text.highlight }}>
-          <FaCalendarAlt className="text-lg" />
-          {formattedDate}
-          {getStatusIcon()}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4 text-base font-medium" style={{ color: colors.components.titre.text.highlight }}>
+            <FaCalendarAlt className="text-lg" />
+            {formattedDate}
+            {getStatusIcon()}
+          </div>
         </div>
 
         {/* Informations du trajet */}
