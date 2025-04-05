@@ -74,36 +74,27 @@ export const tripService = {
   async createTripRequest(tripId: string) {
     const token = localStorage.getItem('token');
     if (!token) {
-      throw new Error('Non connecté');
+      throw new Error('Vous devez être connecté pour effectuer cette action');
     }
 
-    try {
-      const response = await fetch(`${API_URL}/trips/${tripId}/requests`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
+    const response = await fetch(`${API_URL}/trips/${tripId}/requests`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
 
+    const data = await response.json();
+    
+    if (!response.ok) {
       if (response.status === 401) {
         localStorage.removeItem('token');
-        throw new Error('Session expirée');
       }
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la création de la demande');
-      }
-
-      return response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Erreur lors de la création de la demande : ${error.message}`);
-      } else {
-        throw error;
-      }
+      throw new Error(data.message || 'Une erreur est survenue');
     }
+
+    return data;
   },
 
   async handleTripRequest(tripId: string, requestId: string, action: 'accept' | 'reject') {

@@ -47,6 +47,42 @@ export const userService = {
   },
 
   /**
+   * Récupère les données d'un utilisateur spécifique
+   * @param userId L'ID de l'utilisateur à récupérer
+   * @returns Promise<UserData> Les données de l'utilisateur
+   */
+  async getUserById(userId: string): Promise<{ firstName: string; lastName: string; profilePicture?: string }> {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Vous devez être connecté pour effectuer cette action');
+      }
+
+      const response = await axios.get(`${API_URL}/api/users/public/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      return {
+        firstName: response.data.firstName,
+        lastName: response.data.lastName,
+        profilePicture: response.data.profilePicture
+      };
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        throw new Error('Utilisateur non trouvé');
+      } else if (error.response?.status === 401) {
+        throw new Error('Session expirée, veuillez vous reconnecter');
+      } else if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else {
+        throw new Error('Erreur lors de la récupération des informations utilisateur');
+      }
+    }
+  },
+
+  /**
    * Met à jour les données de l'utilisateur
    * @param userData Les nouvelles données de l'utilisateur
    * @returns Promise<UserData> Les données mises à jour

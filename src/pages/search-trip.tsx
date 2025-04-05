@@ -15,7 +15,6 @@ import { Division } from '@/components/global/Division';
 import TripItemDetail from '@/components/trip/TripItemDetail';
 import { Modal } from '@/components/global/Modal';
 import { ProfilPic } from '@/components/global/ProfilPic';
-import { Toaster } from 'react-hot-toast';
 
 export default function SearchTrip() {
   const [departure, setDeparture] = useState('');
@@ -82,7 +81,6 @@ export default function SearchTrip() {
 
   return (
     <div className="min-h-screen flex flex-col p-4 pb-20" style={{ backgroundColor: colors.background.page }}>
-      <Toaster position="top-center" />
       
       <div className="w-full max-w-md mx-auto space-y-8">
         <Header 
@@ -177,9 +175,8 @@ export default function SearchTrip() {
             to={selectedTrip.arrival}
             toAddress={selectedTrip.arrival}
             duration={selectedTrip.duration}
-            userName={selectedTrip.driver?.firstName || "Conducteur"}
-            userImage={selectedTrip.driver?.profilePicture}
-            rating={selectedTrip.driver?.rating || 3}
+            userId={selectedTrip.userId}
+            rating={3}
             onRequestSent={handleRequestSent}
           />
         )}

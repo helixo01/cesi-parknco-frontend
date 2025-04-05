@@ -6,13 +6,15 @@ import { NavBar } from '@/components/global/NavBar';
 import { colors } from "@/styles/colors";
 import { tripService } from '@/services/tripService';
 import { useAuth } from '@/hooks/useAuth';
-import { toast, Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/router';
 import { Division } from '@/components/global/Division';
 import Message from '@/components/global/Message';
+import { userService } from '@/services/userService';
 
 interface Trip {
   _id: string;
+  userId: string;
   departure: string;
   arrival: string;
   date: string;
@@ -34,6 +36,12 @@ interface TripRequest {
     arrival: string;
     date: string;
     time: string;
+    userId?: string;
+    user?: {
+      firstName: string;
+      lastName: string;
+      profilePicture?: string;
+    };
   };
   user?: {
     firstName: string;
@@ -78,28 +86,59 @@ export default function Messages() {
       const driverData = await tripService.getUserTripRequests('driver');
       
       // Transformer les données pour les demandes conducteur
-      const formattedDriverRequests = driverData.flatMap((trip: Trip) => 
-        trip.requests.map(request => ({
-          _id: request._id,
-          tripId: trip._id,
-          userId: request.userId,
-          status: request.status,
-          trip: {
-            departure: trip.departure,
-            arrival: trip.arrival,
-            date: trip.date,
-            time: trip.time
+      const formattedDriverRequests = await Promise.all(driverData.flatMap(async (trip: Trip) => 
+        await Promise.all(trip.requests.map(async request => {
+          // Récupérer les informations du passager
+          let passengerInfo;
+          try {
+            passengerInfo = await userService.getUserById(request.userId);
+          } catch (error) {
+            console.error('Erreur lors de la récupération des infos passager:', error);
+            passengerInfo = null;
           }
+
+          return {
+            _id: request._id,
+            tripId: trip._id,
+            userId: request.userId,
+            status: request.status,
+            trip: {
+              departure: trip.departure,
+              arrival: trip.arrival,
+              date: trip.date,
+              time: trip.time
+            },
+            user: passengerInfo
+          };
         }))
-      );
-      setDriverRequests(formattedDriverRequests);
+      ));
+      setDriverRequests(formattedDriverRequests.flat());
 
       // Charger les demandes en tant que passager
       const passengerData = await tripService.getUserTripRequests('passenger');
+      console.log('Données passager reçues:', passengerData);
       
       // Transformer les données pour les demandes passager
-      const formattedPassengerRequests = passengerData.map((trip: Trip) => {
+      const formattedPassengerRequests = await Promise.all(passengerData.map(async (trip: Trip) => {
         const request = trip.requests[0];
+        console.log('Trip data:', trip);
+        
+        // Récupérer les informations du conducteur
+        let driverInfo = null;
+        if (trip.userId) {
+          try {
+            driverInfo = await userService.getUserById(trip.userId);
+          } catch (error) {
+            console.error('Erreur lors de la récupération des infos conducteur:', error);
+            // En cas d'erreur, on continue avec les informations de base
+            driverInfo = {
+              firstName: 'Conducteur',
+              lastName: '',
+              profilePicture: null
+            };
+          }
+        }
+
         return {
           _id: request._id,
           tripId: trip._id,
@@ -109,11 +148,14 @@ export default function Messages() {
             departure: trip.departure,
             arrival: trip.arrival,
             date: trip.date,
-            time: trip.time
+            time: trip.time,
+            userId: trip.userId,
+            user: driverInfo
           }
         } as TripRequest;
-      });
+      }));
 
+      console.log('Requêtes passager formatées:', formattedPassengerRequests);
       setPassengerRequests(formattedPassengerRequests);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Une erreur est survenue";
@@ -146,7 +188,6 @@ export default function Messages() {
 
   return (
     <div className="min-h-screen flex flex-col p-4 pb-20" style={{ backgroundColor: colors.background.page }}>
-      <Toaster position="top-center" />
       
       <div className="w-full max-w-md mx-auto space-y-8">
         <Header 
@@ -205,7 +246,8 @@ export default function Messages() {
                   {passengerRequests.map((request) => (
                     <Message
                       key={request._id}
-                      userName="Conducteur"
+                      userName={formatUserName(request.trip.user)}
+                      userImage={request.trip.user?.profilePicture}
                       from={request.trip.departure}
                       to={request.trip.arrival}
                       date={formatDate(request.trip.date)}
