@@ -5,6 +5,8 @@ import { FiLogOut, FiExternalLink } from 'react-icons/fi';
 import { colors } from '@/styles/colors';
 import { Montserrat } from 'next/font/google';
 import { Logo } from '@/components/global/Logo';
+import { authService } from '@/services/auth';
+import { toast } from 'react-hot-toast';
 
 const montserrat = Montserrat({ subsets: ['latin'] });
 
@@ -22,9 +24,14 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({ items }) => {
   const router = useRouter();
   const currentPath = router.pathname;
 
-  const handleLogout = () => {
-    // Logique de déconnexion à implémenter
-    router.push('/login');
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      router.push('/login');
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+      toast.error('Erreur lors de la déconnexion');
+    }
   };
 
   return (

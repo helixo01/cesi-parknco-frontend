@@ -4,9 +4,11 @@ import { NavBar } from "@/components/global/NavBar";
 import { Title } from "@/components/global/Title";
 import { SettingsItem } from "@/components/global/SettingsItem";
 import { colors } from "@/styles/colors";
-import { AiOutlineUser, AiOutlineCar, AiOutlineStar, AiOutlineClockCircle, AiOutlineMessage, AiOutlineSetting, AiOutlineSafety } from "react-icons/ai";
+import { AiOutlineUser, AiOutlineCar, AiOutlineStar, AiOutlineClockCircle, AiOutlineMessage, AiOutlineSetting, AiOutlineSafety, AiOutlineLogout } from "react-icons/ai";
 import { useRouter } from "next/router";
 import { userService } from "@/services/userService";
+import { authService } from "@/services/auth";
+import { toast } from "react-hot-toast";
 
 export default function Profile() {
   const router = useRouter();
@@ -31,6 +33,16 @@ export default function Profile() {
       setUserData(prev => ({ ...prev, profilePicture: newProfilePicture }));
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la photo de profil:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      router.push('/login');
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+      toast.error('Erreur lors de la déconnexion');
     }
   };
 
@@ -84,6 +96,14 @@ export default function Profile() {
             label="Paramètres"
             onClick={() => {}}
           />
+          <div className="pt-6 border-t border-gray-700">
+            <SettingsItem
+              icon={AiOutlineLogout}
+              label="Déconnexion"
+              onClick={handleLogout}
+              style={{ backgroundColor: colors.state.error }}
+            />
+          </div>
         </div>
       </div>
       <NavBar activePage="profile" />
