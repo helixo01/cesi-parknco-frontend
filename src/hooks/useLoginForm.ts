@@ -37,11 +37,17 @@ export const useLoginForm = () => {
     if (!validateForm()) return;
 
     try {
-      await authService.login({
+      const response = await authService.login({
         email: formState.email,
         password: formState.password,
       });
-      router.push("/home");
+      
+      // Redirection basée sur le rôle
+      if (response.user && ['admin_user', 'admin_tech'].includes(response.user.role)) {
+        router.push("/admin-home");
+      } else {
+        router.push("/home");
+      }
     } catch (err) {
       setFormState((prev) => ({
         ...prev,

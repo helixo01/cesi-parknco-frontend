@@ -5,6 +5,19 @@ interface LoginCredentials {
   password: string;
 }
 
+interface User {
+  _id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+}
+
+interface LoginResponse {
+  token: string;
+  user: User;
+}
+
 interface RegisterData {
   nom: string;
   prenom: string;
@@ -13,16 +26,13 @@ interface RegisterData {
 }
 
 export const authService = {
-  login: async (credentials: LoginCredentials) => {
+  login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
     const response = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        email: credentials.email,
-        password: credentials.password,
-      }),
+      body: JSON.stringify(credentials),
     });
 
     if (!response.ok) {
