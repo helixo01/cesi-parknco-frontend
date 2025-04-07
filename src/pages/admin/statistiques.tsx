@@ -26,7 +26,7 @@ const Statistics: React.FC = () => {
     if (!loading) {
       if (!isAuthenticated) {
         router.replace('/login');
-      } else if (user && !['admin_user', 'admin_tech'].includes(user.role)) {
+      } else if (user && user.role !== 'admin_user') {
         router.replace('/');
       }
     }
@@ -40,7 +40,7 @@ const Statistics: React.FC = () => {
     );
   }
 
-  if (!isAuthenticated || (user && !['admin_user', 'admin_tech'].includes(user.role))) {
+  if (!isAuthenticated || (user && user.role !== 'admin_user')) {
     return null;
   }
 

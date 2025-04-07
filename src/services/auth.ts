@@ -89,6 +89,7 @@ export const authService = {
       throw new Error('Erreur lors de la récupération de l\'utilisateur');
     }
 
-    return await response.json();
+    const data = await response.json();
+    return data.user || data;
   },
 };
