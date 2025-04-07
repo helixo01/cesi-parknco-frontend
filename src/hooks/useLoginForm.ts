@@ -41,7 +41,16 @@ export const useLoginForm = () => {
         email: formState.email,
         password: formState.password,
       });
-      router.push("/home");
+      
+      // Récupérer l'utilisateur connecté et son rôle
+      const user = await authService.getCurrentUser();
+      
+      // Rediriger en fonction du rôle
+      if (user.role === 'admin_user' || user.role === 'admin_tech') {
+        router.replace('/admin/statistiques');
+      } else {
+        router.replace('/home');
+      }
     } catch (err) {
       setFormState((prev) => ({
         ...prev,

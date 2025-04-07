@@ -12,6 +12,12 @@ interface RegisterData {
   motDePasse: string;
 }
 
+interface User {
+  email: string;
+  role: 'user' | 'admin_user' | 'admin_tech';
+  // ... autres champs de l'utilisateur
+}
+
 export const authService = {
   login: async (credentials: LoginCredentials) => {
     const response = await fetch(`${AUTH_API_URL}/api/auth/login`, {
@@ -71,5 +77,18 @@ export const authService = {
       console.error('Erreur lors de la déconnexion:', error);
       throw error;
     }
+  },
+
+  getCurrentUser: async (): Promise<User> => {
+    const response = await fetch(`${AUTH_API_URL}/api/auth/me`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération de l\'utilisateur');
+    }
+
+    return await response.json();
   },
 };
