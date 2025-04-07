@@ -1,244 +1,469 @@
 import { Trip } from '@/types/trip';
-import { API_URL } from '@/config/index';
+import { API_URL } from '@/config/api';
 
 export const tripService = {
-  async createTrip(tripData: Omit<Trip, 'id' | 'userId'>) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Non connecté');
-    }
-
+  // Créer un nouveau trajet
+  createTrip: async (tripData: any) => {
     try {
-      const response = await fetch(`${API_URL}/trips`, {
+      const response = await fetch(`${API_URL}/api/trips`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(tripData)
+        credentials: 'include',
+        body: JSON.stringify(tripData),
       });
 
-      if (response.status === 401) {
-        localStorage.removeItem('token');
-        throw new Error('Session expirée');
-      }
-
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la création du trajet');
+        throw new Error('Erreur lors de la création du trajet');
       }
 
-      return response.json();
+      return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Erreur lors de la création du trajet : ${error.message}`);
-      } else {
-        throw error;
-      }
-    }
-  },
-
-  async getMyTrips() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Non connecté');
-    }
-
-    try {
-      const response = await fetch(`${API_URL}/trips/my-trips`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.status === 401) {
-        localStorage.removeItem('token');
-        throw new Error('Session expirée');
-      }
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la récupération des trajets');
-      }
-
-      const data = await response.json();
-      return {
-        currentTrips: data.currentTrips.filter((trip: Trip) => trip.userId),
-        historicTrips: data.historicTrips.filter((trip: Trip) => trip.userId)
-      };
-    } catch (error) {
+      console.error('Erreur:', error);
       throw error;
     }
   },
 
-  async createTripRequest(tripId: string) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Non connecté');
-    }
-
+  // Obtenir tous les trajets
+  getAllTrips: async () => {
     try {
-      const response = await fetch(`${API_URL}/trips/${tripId}/requests`, {
-        method: 'POST',
+      const response = await fetch(`${API_URL}/api/trips`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
+        },
+        credentials: 'include',
       });
 
-      if (response.status === 401) {
-        localStorage.removeItem('token');
-        throw new Error('Session expirée');
-      }
-
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la création de la demande');
+        throw new Error('Erreur lors de la récupération des trajets');
       }
 
-      return response.json();
+      return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Erreur lors de la création de la demande : ${error.message}`);
-      } else {
-        throw error;
-      }
+      console.error('Erreur:', error);
+      throw error;
     }
   },
 
-  async handleTripRequest(tripId: string, requestId: string, action: 'accept' | 'reject') {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Non connecté');
-    }
-
+  // Obtenir un trajet par son ID
+  getTripById: async (tripId: string) => {
     try {
-      const response = await fetch(`${API_URL}/trips/${tripId}/requests/${requestId}`, {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération du trajet');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Obtenir mes trajets
+  getMyTrips: async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/my-trips`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération de vos trajets');
+      }
+
+      const data = await response.json();
+      console.log('Réponse du serveur:', data); 
+
+      // S'assurer que les tableaux existent
+      return {
+        currentTrips: Array.isArray(data.currentTrips) ? data.currentTrips : [],
+        historicTrips: Array.isArray(data.historicTrips) ? data.historicTrips : []
+      };
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Mettre à jour un trajet
+  updateTrip: async (tripId: string, tripData: any) => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ action })
+        credentials: 'include',
+        body: JSON.stringify(tripData),
       });
 
-      if (response.status === 401) {
-        localStorage.removeItem('token');
-        throw new Error('Session expirée');
+      if (!response.ok) {
+        throw new Error('Erreur lors de la mise à jour du trajet');
       }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Supprimer un trajet
+  deleteTrip: async (tripId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression du trajet');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Demander à rejoindre un trajet
+  requestToJoin: async (tripId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/requests`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la demande de rejoindre le trajet');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Accepter une demande de rejoindre un trajet
+  acceptRequest: async (tripId: string, requestId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/requests/${requestId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ action: 'accept' })
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'acceptation de la demande');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Refuser une demande de rejoindre un trajet
+  rejectRequest: async (tripId: string, requestId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/requests/${requestId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ action: 'reject' })
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors du refus de la demande');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Confirmer un trajet en tant que conducteur
+  confirmPickupAsDriver: async (tripId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/confirm-driver`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ isConfirmed: true }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la confirmation du trajet');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Confirmer un trajet en tant que passager
+  confirmPickupAsPassenger: async (tripId: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/confirm-passenger`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ isConfirmed: true }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la confirmation du trajet');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Noter un conducteur
+  rateDriver: async (tripId: string, rating: number) => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/rate-driver`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          rating,
+          isConfirmed: true
+        })
+      });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la gestion de la demande');
+        throw new Error(error.message || 'Erreur lors de la notation du conducteur');
       }
 
-      return response.json();
+      return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Erreur lors de la gestion de la demande : ${error.message}`);
-      } else {
-        throw error;
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Noter un passager
+  ratePassenger: async (tripId: string, passengerId: string, rating: number, comment: string = '') => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/rate-passenger`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ passengerId, rating, comment }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la notation du passager');
       }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Rechercher des trajets
+  searchTrips: async (searchParams: any) => {
+    try {
+      const queryString = new URLSearchParams(searchParams).toString();
+      const response = await fetch(`${API_URL}/api/trips/search?${queryString}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la recherche de trajets');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
     }
   },
 
   async getUserTripRequests(role: 'driver' | 'passenger') {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Non connecté');
-    }
-
     try {
-      const response = await fetch(`${API_URL}/users/requests?role=${role}`, {
+      const response = await fetch(`${API_URL}/api/users/requests?role=${role}`, {
+        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
       });
 
-      if (response.status === 401) {
-        localStorage.removeItem('token');
-        throw new Error('Session expirée');
-      }
-
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la récupération des demandes');
+        throw new Error('Erreur lors de la récupération des demandes');
       }
 
-      return response.json();
+      return await response.json();
     } catch (error) {
       throw error;
     }
   },
 
   async getTripRequests(tripId: string) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Non connecté');
-    }
-
     try {
-      const response = await fetch(`${API_URL}/trips/${tripId}/requests`, {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/requests`, {
+        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
       });
 
-      if (response.status === 401) {
-        localStorage.removeItem('token');
-        throw new Error('Session expirée');
-      }
-
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la récupération des demandes');
+        throw new Error('Erreur lors de la récupération des demandes');
       }
 
-      return response.json();
+      return await response.json();
     } catch (error) {
       throw error;
     }
   },
 
-  async searchTrips(searchParams: { departure: string; arrival: string; date: string; time: string }) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('Non connecté');
-    }
-
+  async rateTrip(tripId: string, rating: number) {
     try {
-      const queryParams = new URLSearchParams({
-        departure: searchParams.departure,
-        arrival: searchParams.arrival,
-        date: searchParams.date,
-        time: searchParams.time
-      });
-
-      const response = await fetch(`${API_URL}/trips/search?${queryParams}`, {
-        method: 'GET',
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/rate`, {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ rating })
       });
-
-      if (response.status === 401) {
-        localStorage.removeItem('token');
-        throw new Error('Session expirée');
-      }
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la recherche des trajets');
+        throw new Error('Erreur lors de la notation du trajet');
       }
 
-      const trips = await response.json();
-      return trips;
+      return await response.json();
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Erreur lors de la recherche des trajets : ${error.message}`);
-      } else {
-        throw error;
-      }
+      console.error('Erreur:', error);
+      throw error;
     }
-  }
+  },
+
+  async completeTripAndRate(tripId: string, rating: number) {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/complete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ rating })
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la finalisation du trajet');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  async rateAndCompleteAsPassenger(tripId: string, rating: number) {
+    try {
+      // D'abord confirmer la prise en charge
+      console.log('Confirmation de la prise en charge en tant que passager...');
+      await this.confirmPickupAsPassenger(tripId);
+
+      // Ensuite noter le conducteur
+      console.log('Notation du conducteur...');
+      const ratingResponse = await this.rateDriver(tripId, rating);
+
+      return ratingResponse;
+    } catch (error) {
+      console.error('Erreur lors de la confirmation et notation:', error);
+      throw error;
+    }
+  },
+
+  async rateAndCompleteAsDriver(tripId: string, passengerId: string, rating: number) {
+    const response = await fetch(`${API_URL}/api/trips/${tripId}/rate-passenger`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        passengerId,
+        rating,
+        isConfirmed: true
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Erreur lors de la notation du passager');
+    }
+
+    return response.json();
+  },
+
+  // Pour compatibilité avec la page des messages
+  handleTripRequest: async (tripId: string, requestId: string, action: 'accept' | 'reject') => {
+    try {
+      if (action === 'accept') {
+        return await tripService.acceptRequest(tripId, requestId);
+      } else {
+        return await tripService.rejectRequest(tripId, requestId);
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
 };

@@ -1,21 +1,8 @@
-import { API_URL } from '@/config/api';
+import { AUTH_API_URL } from '@/config/api';
 
 interface LoginCredentials {
   email: string;
   password: string;
-}
-
-interface User {
-  _id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-}
-
-interface LoginResponse {
-  token: string;
-  user: User;
 }
 
 interface RegisterData {
@@ -26,30 +13,33 @@ interface RegisterData {
 }
 
 export const authService = {
-  login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
-    const response = await fetch(`${API_URL}/api/auth/login`, {
+  login: async (credentials: LoginCredentials) => {
+    const response = await fetch(`${AUTH_API_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(credentials),
+      credentials: 'include',
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password,
+      }),
     });
 
     if (!response.ok) {
       throw new Error('Erreur lors de la connexion');
     }
 
-    const data = await response.json();
-    localStorage.setItem('token', data.token);
-    return data;
+    return await response.json();
   },
 
   register: async (userData: RegisterData) => {
-    const response = await fetch(`${API_URL}/api/auth/register`, {
+    const response = await fetch(`${AUTH_API_URL}/api/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
         firstName: userData.prenom,
         lastName: userData.nom,
@@ -65,7 +55,21 @@ export const authService = {
     return await response.json();
   },
 
-  logout: () => {
-    localStorage.removeItem('token');
+  logout: async () => {
+    try {
+      const response = await fetch(`${AUTH_API_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la déconnexion');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+      throw error;
+    }
   },
 };

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { API_URL } from '@/config/api';
+import { AUTH_API_URL } from '@/config/api';
 
 interface User {
+  id: string;
   _id: string;
   email: string;
   firstName: string;
@@ -25,21 +26,9 @@ export const useAuth = (): AuthState => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setState({
-            isAuthenticated: false,
-            loading: false,
-            user: null
-          });
-          return;
-        }
-
         // Vérifier le token avec le backend
-        const response = await fetch(`${API_URL}/api/auth/verify`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+        const response = await fetch(`${AUTH_API_URL}/api/auth/verify`, {
+          credentials: 'include', // Important pour les cookies
         });
 
         if (response.ok) {
@@ -50,7 +39,6 @@ export const useAuth = (): AuthState => {
             user: userData.user
           });
         } else {
-          localStorage.removeItem('token');
           setState({
             isAuthenticated: false,
             loading: false,
@@ -58,7 +46,7 @@ export const useAuth = (): AuthState => {
           });
         }
       } catch (error) {
-        localStorage.removeItem('token');
+        console.error('Erreur de vérification d\'authentification:', error);
         setState({
           isAuthenticated: false,
           loading: false,
@@ -68,7 +56,7 @@ export const useAuth = (): AuthState => {
     };
 
     checkAuth();
-  }, []);
+  }, []); // On ne dépend plus du pathname
 
   return state;
 };

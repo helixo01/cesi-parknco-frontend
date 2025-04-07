@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProfilPic } from '@/components/global/ProfilPic';
 import { Star } from '@/components/global/Star';
 import { FaRegCalendarAlt } from 'react-icons/fa';
 import { HiOutlineUserAdd } from 'react-icons/hi';
 import PopUpConfirmation from '@/components/global/PopUpConfirmation';
 import { tripService } from '@/services/tripService';
+import { userService } from '@/services/userService';
 import { toast } from 'react-hot-toast';
+
+interface UserInfo {
+  firstName: string;
+  lastName: string;
+  profilePicture?: string | null;
+}
 
 interface TripItemDetailProps {
   id: string;
@@ -17,8 +24,7 @@ interface TripItemDetailProps {
   to: string;
   toAddress: string;
   duration: string;
-  userName: string;
-  userImage?: string | null;
+  userId: string;
   rating: number;
   onRequestSent?: () => void;
 }
@@ -33,30 +39,76 @@ const TripItemDetail: React.FC<TripItemDetailProps> = ({
   to,
   toAddress,
   duration,
-  userName,
-  userImage,
+  userId,
   rating,
   onRequestSent
 }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState<UserInfo | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = await userService.getUserById(userId);
+        setUserData({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          profilePicture: data.profilePicture || null
+        });
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données utilisateur:', error);
+        setUserData({
+          firstName: 'Conducteur',
+          lastName: '',
+          profilePicture: null
+        });
+      }
+    };
+
+    fetchUserData();
+  }, [userId]);
 
   const handlePostuler = () => {
+    if (isLoading) return;
     setIsPopupOpen(true);
   };
 
   const handleAccept = async () => {
+    if (isLoading) return;
+    
     try {
       setIsLoading(true);
-      await tripService.createTripRequest(id);
-      toast.success('Votre demande a été envoyée avec succès !');
-      onRequestSent?.();
-    } catch (error) {
-      console.error('Erreur lors de la création de la demande:', error);
-      toast.error('Une erreur est survenue lors de l\'envoi de votre demande');
+      await tripService.requestToJoin(id);
+      setIsPopupOpen(false);
+      
+      if (onRequestSent) {
+        onRequestSent();
+      }
+
+      toast('Votre demande a bien été envoyée au conducteur', {
+        duration: 3000,
+        icon: '✅'
+      });
+
+    } catch (error: any) {
+      setIsPopupOpen(false);
+      
+      let errorMessage = 'Une erreur est survenue';
+      
+      if (error instanceof Error) {
+        const message = error.message.toLowerCase();
+        if (message.includes('déjà') || message.includes('already')) {
+          errorMessage = 'Vous avez déjà envoyé une demande pour ce trajet';
+        }
+      }
+
+      toast(errorMessage, {
+        duration: 3000,
+        icon: '❌'
+      });
     } finally {
       setIsLoading(false);
-      setIsPopupOpen(false);
     }
   };
 
@@ -106,11 +158,13 @@ const TripItemDetail: React.FC<TripItemDetailProps> = ({
           {/* Partie profil à droite */}
           <div className="flex flex-col items-center justify-center space-y-4 min-w-[140px] h-full py-16">
             <ProfilPic
-              src={userImage}
-              alt={userName}
+              src={userData?.profilePicture || null}
+              alt={userData ? `${userData.firstName} ${userData.lastName}` : 'Photo de profil'}
               className="w-16 h-16"
             />
-            <span className="text-sm text-center">{userName}</span>
+            <span className="text-sm text-center">
+              {userData ? `${userData.firstName} ${userData.lastName}` : 'Chargement...'}
+            </span>
             <Star rating={rating} />
             {/* Bouton Postuler */}
             <button 
