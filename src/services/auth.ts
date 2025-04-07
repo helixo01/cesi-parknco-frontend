@@ -13,8 +13,12 @@ interface RegisterData {
 }
 
 interface User {
+  id: string;
   email: string;
+  firstName?: string;
+  lastName?: string;
   role: 'user' | 'admin_user' | 'admin_tech';
+  profilePicture?: string;
   // ... autres champs de l'utilisateur
 }
 

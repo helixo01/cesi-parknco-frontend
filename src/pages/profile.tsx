@@ -74,7 +74,7 @@ export default function Profile() {
           <SettingsItem
             icon={AiOutlineStar}
             label="Points et statistiques"
-            onClick={() => {}}
+            onClick={() => router.push("/profile/stats")}
           />
           <SettingsItem
             icon={AiOutlineClockCircle}
