@@ -6,13 +6,15 @@ interface PopUpConfirmationProps {
   onCancel: () => void;
   onAccept: () => void;
   isOpen: boolean;
+  loading?: boolean;
 }
 
 export const PopUpConfirmation: React.FC<PopUpConfirmationProps> = ({
   message,
   onCancel,
   onAccept,
-  isOpen
+  isOpen,
+  loading = false
 }) => {
   if (!isOpen) return null;
 
@@ -29,12 +31,14 @@ export const PopUpConfirmation: React.FC<PopUpConfirmationProps> = ({
           {/* Bouton Annuler */}
           <button
             onClick={onCancel}
+            disabled={loading}
             style={{ 
               borderColor: colors.state.error, 
               color: colors.text.white,
-              backgroundColor: `${colors.state.error}99`
+              backgroundColor: `${colors.state.error}99`,
+              opacity: loading ? 0.7 : 1
             }}
-            className="flex-1 border-2 rounded-lg px-6 py-3 hover:bg-opacity-100 transition-colors"
+            className="flex-1 border-2 rounded-lg px-6 py-3 hover:bg-opacity-100 transition-colors disabled:cursor-not-allowed"
           >
             Annuler
           </button>
@@ -42,14 +46,23 @@ export const PopUpConfirmation: React.FC<PopUpConfirmationProps> = ({
           {/* Bouton Accepter */}
           <button
             onClick={onAccept}
+            disabled={loading}
             style={{ 
               borderColor: colors.state.success, 
               color: colors.text.white,
-              backgroundColor: `${colors.state.success}99`
+              backgroundColor: `${colors.state.success}99`,
+              opacity: loading ? 0.7 : 1
             }}
-            className="flex-1 border-2 rounded-lg px-6 py-3 hover:bg-opacity-100 transition-colors"
+            className="flex-1 border-2 rounded-lg px-6 py-3 hover:bg-opacity-100 transition-colors disabled:cursor-not-allowed flex items-center justify-center"
           >
-            Accepter
+            {loading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                Traitement...
+              </>
+            ) : (
+              'Accepter'
+            )}
           </button>
         </div>
       </div>

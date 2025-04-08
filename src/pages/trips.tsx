@@ -32,6 +32,33 @@ export default function Trips() {
   // État pour le filtre actif
   const [activeFilter, setActiveFilter] = useState<'all' | 'driver' | 'passenger' | 'upcoming' | 'past'>('all');
 
+  // Appliquer le filtre depuis l'URL lors du chargement de la page
+  useEffect(() => {
+    if (router.query.filter && typeof router.query.filter === 'string') {
+      const urlFilter = router.query.filter as 'all' | 'driver' | 'passenger' | 'upcoming' | 'past';
+      if (['all', 'driver', 'passenger', 'upcoming', 'past'].includes(urlFilter)) {
+        setActiveFilter(urlFilter);
+      }
+    }
+  }, [router.query.filter]);
+
+  // Mettre à jour l'URL quand le filtre change
+  useEffect(() => {
+    const currentPath = router.pathname;
+    const currentQuery = { ...router.query };
+    
+    if (activeFilter === 'all') {
+      delete currentQuery.filter;
+    } else {
+      currentQuery.filter = activeFilter;
+    }
+    
+    router.replace({
+      pathname: currentPath,
+      query: currentQuery
+    }, undefined, { shallow: true });
+  }, [activeFilter]);
+
   // Options de filtrage
   const filterOptions = [
     { id: 'all', label: 'Tous' },

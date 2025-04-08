@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { Division } from '@/components/global/Division';
 import Message from '@/components/global/Message';
 import { userService } from '@/services/userService';
+import { getUserStats } from '@/services/statsService';
 
 interface Trip {
   _id: string;
@@ -41,12 +42,14 @@ interface TripRequest {
       firstName: string;
       lastName: string;
       profilePicture?: string;
+      averageRating?: number;
     };
   };
   user?: {
     firstName: string;
     lastName: string;
     profilePicture?: string;
+    averageRating?: number;
   };
 }
 
@@ -92,6 +95,12 @@ export default function Messages() {
           let passengerInfo;
           try {
             passengerInfo = await userService.getUserById(request.userId);
+            // Récupérer les statistiques du passager
+            const passengerStats = await getUserStats(request.userId);
+            passengerInfo = {
+              ...passengerInfo,
+              averageRating: passengerStats.averageRating
+            };
           } catch (error) {
             console.error('Erreur lors de la récupération des infos passager:', error);
             passengerInfo = null;
@@ -128,13 +137,20 @@ export default function Messages() {
         if (trip.userId) {
           try {
             driverInfo = await userService.getUserById(trip.userId);
+            // Récupérer les statistiques du conducteur
+            const driverStats = await getUserStats(trip.userId);
+            driverInfo = {
+              ...driverInfo,
+              averageRating: driverStats.averageRating
+            };
           } catch (error) {
             console.error('Erreur lors de la récupération des infos conducteur:', error);
             // En cas d'erreur, on continue avec les informations de base
             driverInfo = {
               firstName: 'Conducteur',
               lastName: '',
-              profilePicture: null
+              profilePicture: null,
+              averageRating: 0
             };
           }
         }
@@ -200,69 +216,64 @@ export default function Messages() {
             Chargement...
           </Division>
         ) : error ? (
-          <Division variant="default" className="p-6">
-            <div className="p-4 rounded-lg" style={{ 
-              backgroundColor: colors.components.info.background.error,
-              color: colors.components.info.text.error
-            }}>
-              {error}
-            </div>
+          <Division variant="default" className="p-6 text-center text-white">
+            {error}
           </Division>
         ) : (
-          <div className="space-y-4">
-            {/* Demandes reçues (conducteur) */}
-            <Division variant="default" className="p-6">
-              <h2 className="text-xl font-semibold mb-4 text-white">Demandes reçues</h2>
-              {driverRequests.length === 0 ? (
-                <p className="text-gray-400">Aucune demande reçue</p>
-              ) : (
-                <div className="space-y-4">
-                  {driverRequests.map((request) => (
-                    <Message
-                      key={request._id}
-                      userName={formatUserName(request.user)}
-                      userImage={request.user?.profilePicture}
-                      from={request.trip.departure}
-                      to={request.trip.arrival}
-                      date={formatDate(request.trip.date)}
-                      time={request.trip.time}
-                      status={request.status}
-                      showActions={request.status === 'pending'}
-                      onAccept={() => handleRequest(request.tripId, request._id, 'accept')}
-                      onReject={() => handleRequest(request.tripId, request._id, 'reject')}
-                    />
-                  ))}
-                </div>
-              )}
-            </Division>
+          <>
+            {/* Demandes reçues (en tant que conducteur) */}
+            {driverRequests.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-white">Demandes reçues</h2>
+                {driverRequests.map((request) => (
+                  <Message
+                    key={request._id}
+                    userName={formatUserName(request.user)}
+                    userImage={request.user?.profilePicture}
+                    from={request.trip.departure}
+                    to={request.trip.arrival}
+                    date={formatDate(request.trip.date)}
+                    time={request.trip.time}
+                    status={request.status}
+                    onAccept={() => handleRequest(request.tripId, request._id, 'accept')}
+                    onReject={() => handleRequest(request.tripId, request._id, 'reject')}
+                    showActions={request.status === 'pending'}
+                    averageRating={request.user?.averageRating}
+                  />
+                ))}
+              </div>
+            )}
 
-            {/* Demandes envoyées (passager) */}
-            <Division variant="default" className="p-6">
-              <h2 className="text-xl font-semibold mb-4 text-white">Demandes envoyées</h2>
-              {passengerRequests.length === 0 ? (
-                <p className="text-gray-400">Aucune demande envoyée</p>
-              ) : (
-                <div className="space-y-4">
-                  {passengerRequests.map((request) => (
-                    <Message
-                      key={request._id}
-                      userName={formatUserName(request.trip.user)}
-                      userImage={request.trip.user?.profilePicture}
-                      from={request.trip.departure}
-                      to={request.trip.arrival}
-                      date={formatDate(request.trip.date)}
-                      time={request.trip.time}
-                      status={request.status}
-                    />
-                  ))}
-                </div>
-              )}
-            </Division>
-          </div>
+            {/* Demandes envoyées (en tant que passager) */}
+            {passengerRequests.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-white">Demandes envoyées</h2>
+                {passengerRequests.map((request) => (
+                  <Message
+                    key={request._id}
+                    userName={formatUserName(request.trip.user)}
+                    userImage={request.trip.user?.profilePicture}
+                    from={request.trip.departure}
+                    to={request.trip.arrival}
+                    date={formatDate(request.trip.date)}
+                    time={request.trip.time}
+                    status={request.status}
+                    averageRating={request.trip.user?.averageRating}
+                  />
+                ))}
+              </div>
+            )}
+
+            {driverRequests.length === 0 && passengerRequests.length === 0 && (
+              <Division variant="default" className="p-6 text-center text-white">
+                Aucun message
+              </Division>
+            )}
+          </>
         )}
       </div>
 
-      <NavBar activePage="messages" />
+      <NavBar />
     </div>
   );
 } 

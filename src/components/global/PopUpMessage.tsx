@@ -13,6 +13,7 @@ interface PopUpMessageProps {
   onAccept?: () => void;
   onRefuse?: () => void;
   status?: 'pending' | 'accepted' | 'rejected';
+  averageRating?: number;
 }
 
 const PopUpMessage: React.FC<PopUpMessageProps> = ({
@@ -24,7 +25,8 @@ const PopUpMessage: React.FC<PopUpMessageProps> = ({
   time,
   onAccept,
   onRefuse,
-  status
+  status,
+  averageRating = 0
 }) => {
   return (
     <Division variant="default" className="p-2">
@@ -41,7 +43,7 @@ const PopUpMessage: React.FC<PopUpMessageProps> = ({
               />
             </div>
             <div className="mt-3">
-              <Star rating={4.5} className="text-xl" />
+              <Star rating={averageRating} className="!text-yellow-400" />
             </div>
             <span className="text-base text-white mt-2 font-medium">
               {userName}

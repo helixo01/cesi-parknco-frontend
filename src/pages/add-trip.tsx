@@ -10,7 +10,7 @@ import { useTripFormValidation } from "@/hooks/useTripFormValidation";
 import { colors } from "@/styles/colors";
 import { tripService } from "@/services/tripService";
 import { openRouteService } from "@/services/openRouteService";
-import { Trip } from "@/types/trip";
+import { Trip, TripFormErrors } from "@/types/trip";
 import PopUpConfirmation from "@/components/global/PopUpConfirmation";
 
 export default function AddTrip() {
@@ -28,12 +28,14 @@ export default function AddTrip() {
   const [selectedDeparture, setSelectedDeparture] = useState<string | null>(null);
   const [selectedArrival, setSelectedArrival] = useState<string | null>(null);
   const [routeCalculationTimeout, setRouteCalculationTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const {
     vehicles,
     selectedVehicle,
     remainingSeats,
     vehicleType,
+    loading: vehiclesLoading,
     setRemainingSeats,
     setVehicleType,
     handleVehicleChange
@@ -182,18 +184,27 @@ export default function AddTrip() {
     setShowError(false);
     setErrors({});
     
-    // Afficher directement la popup de confirmation
+    // Vérifier les champs obligatoires
+    const isValid = validateForm();
+    if (!isValid) {
+      return;
+    }
+    
+    // Afficher la popup de confirmation
     setIsPopupOpen(true);
   };
 
   const handleConfirmSubmit = async () => {
     try {
+      setSubmitting(true);
+      
       // Vérifier que le trajet est calculé
       if (!routeInfo) {
         throw new Error('Impossible de calculer le trajet');
       }
 
-      const tripData: Omit<Trip, 'id' | 'userId'> = {
+      // Nous n'avons besoin que de ces champs pour la création
+      const tripData = {
         departure: selectedDeparture || departure,
         arrival: selectedArrival || arrival,
         date,
@@ -212,6 +223,9 @@ export default function AddTrip() {
       console.error('Error creating trip:', error);
       setErrorMessage(error instanceof Error ? error.message : 'Erreur lors de la création du trajet');
       setShowError(true);
+      setIsPopupOpen(false);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -307,6 +321,7 @@ export default function AddTrip() {
             onVehicleChange={handleVehicleChange}
             onRemainingSeatsChange={setRemainingSeats}
             onVehicleTypeChange={setVehicleType}
+            loading={vehiclesLoading}
             errors={errors}
           />
 
@@ -314,7 +329,7 @@ export default function AddTrip() {
             <Button
               text="Valider"
               onClick={handleSubmit}
-              disabled={!selectedDeparture || !selectedArrival}
+              disabled={!selectedDeparture || !selectedArrival || vehiclesLoading}
             />
           </div>
         </div>
@@ -326,6 +341,7 @@ export default function AddTrip() {
         message="Êtes-vous sûr de vouloir créer ce trajet ?"
         onCancel={() => setIsPopupOpen(false)}
         onAccept={handleConfirmSubmit}
+        loading={submitting}
       />
     </div>
   );

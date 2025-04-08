@@ -46,6 +46,14 @@ export default function Profile() {
     }
   };
 
+  // Redirection vers la page trajets avec le filtre "à venir" actif
+  const handleReservationsClick = () => {
+    router.push({
+      pathname: '/trips',
+      query: { filter: 'upcoming' }
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col p-4 pb-20" style={{ backgroundColor: colors.background.page }}>
       <div className="w-full max-w-md mx-auto space-y-8">
@@ -69,7 +77,7 @@ export default function Profile() {
           <SettingsItem
             icon={AiOutlineCar}
             label="Véhicule"
-            onClick={() => {}}
+            onClick={() => router.push("/profile/vehicle")}
           />
           <SettingsItem
             icon={AiOutlineStar}
@@ -79,7 +87,7 @@ export default function Profile() {
           <SettingsItem
             icon={AiOutlineClockCircle}
             label="Réservation en cours"
-            onClick={() => {}}
+            onClick={handleReservationsClick}
           />
           <SettingsItem
             icon={AiOutlineMessage}

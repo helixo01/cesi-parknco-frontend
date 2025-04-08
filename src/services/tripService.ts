@@ -212,15 +212,14 @@ export const tripService = {
   },
 
   // Confirmer un trajet en tant que conducteur
-  confirmPickupAsDriver: async (tripId: string) => {
+  confirmTripPickup: async (tripId: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/confirm-driver`, {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/confirm-pickup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ isConfirmed: true }),
       });
 
       if (!response.ok) {
@@ -237,17 +236,16 @@ export const tripService = {
   // Confirmer un trajet en tant que passager
   confirmPickupAsPassenger: async (tripId: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/confirm-passenger`, {
+      const response = await fetch(`${API_URL}/api/trips/${tripId}/confirm-pickup-passenger`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ isConfirmed: true }),
       });
 
       if (!response.ok) {
-        throw new Error('Erreur lors de la confirmation du trajet');
+        throw new Error('Erreur lors de la confirmation de la prise en charge');
       }
 
       return await response.json();
@@ -461,6 +459,28 @@ export const tripService = {
       } else {
         return await tripService.rejectRequest(tripId, requestId);
       }
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
+
+  // Obtenir tous les trajets terminés (pour les statistiques admin)
+  getAllCompletedTrips: async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/trips/admin/completed`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des trajets complétés');
+      }
+
+      return await response.json();
     } catch (error) {
       console.error('Erreur:', error);
       throw error;

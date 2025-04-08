@@ -3,7 +3,7 @@ import Image from "next/image";
 import { AiOutlineCamera } from "react-icons/ai";
 import { colors } from "@/styles/colors";
 import { RxAvatar } from "react-icons/rx";
-import { API_URL } from "@/config/api";
+import { IMAGES_URL } from "@/config/api";
 
 interface ProfilPicProps {
   src?: string | null;
@@ -43,7 +43,7 @@ export const ProfilPic: React.FC<ProfilPicProps> = ({
   };
 
   // Convertir l'URL relative en URL complète si nécessaire
-  const imageUrl = src?.startsWith('http') ? src : src ? `${API_URL}${src}` : null;
+  const imageUrl = src?.startsWith('http') ? src : src ? `${IMAGES_URL}${src}` : null;
 
   return (
     <div 

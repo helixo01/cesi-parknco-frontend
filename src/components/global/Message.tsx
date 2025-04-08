@@ -16,6 +16,7 @@ interface MessageProps {
   onAccept?: () => void;
   onReject?: () => void;
   showActions?: boolean;
+  averageRating?: number;
 }
 
 const StatusBadge: React.FC<{ status: Status }> = ({ status }) => {
