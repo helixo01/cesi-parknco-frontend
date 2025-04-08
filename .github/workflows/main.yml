@@ -1,0 +1,46 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+    frontend:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cesi-parknco-frontend
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Lint du code
+        run: npm run lint
+
+      - name: Vérifier le formatage
+        run: npm run format
+
+      - name: Vérifier les erreurs TypeScript
+        run: npx tsc --noEmit
+
+      - name: Compiler le projet
+        run: npm run build
+
+      - name: Vérifier la présence du build `.next`
+        run: |
+          if [ ! -d ".next" ]; then
+            echo "Build échoué - le dossier .next est introuvable"
+            exit 1
