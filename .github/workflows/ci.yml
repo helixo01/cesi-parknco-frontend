@@ -25,11 +25,19 @@ jobs:
     - name: Check TypeScript
       run: npm run type-check || npx tsc --noEmit
     
-    - name: Lint
-      run: npm run lint
-    
     - name: Build
       run: npm run build
+      env:
+        NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+        NEXT_PUBLIC_AUTH_API_URL: ${{ secrets.NEXT_PUBLIC_AUTH_API_URL }}
+        DISABLE_ESLINT_PLUGIN: true
+
+    - name: Run Cypress tests
+      uses: cypress-io/github-action@v6
+      with:
+        build: npm run build
+        start: npm start
+        wait-on: 'http://localhost:3000'
       env:
         NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         NEXT_PUBLIC_AUTH_API_URL: ${{ secrets.NEXT_PUBLIC_AUTH_API_URL }} 

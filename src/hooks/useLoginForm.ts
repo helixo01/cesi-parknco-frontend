@@ -51,7 +51,7 @@ export const useLoginForm = () => {
       } else {
         await router.push('/home');
       }
-    } catch (err) {
+    } catch (error) {
       setFormState((prev) => ({
         ...prev,
         infoMessage: "Une erreur est survenue lors de la connexion",

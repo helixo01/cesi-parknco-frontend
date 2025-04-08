@@ -16,7 +16,6 @@ export const Header: React.FC<HeaderProps> = ({
   texteNormal,
   texteGras,
   texteNormal2,
-  className = "",
 }) => {
   const router = useRouter();
 
