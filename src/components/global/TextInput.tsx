@@ -22,6 +22,7 @@ interface TextInputProps {
   variant?: "default" | "light" | "error";
   // Options pour le type select
   options?: Option[];
+  "data-cy"?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -36,6 +37,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   disabled = false,
   variant = "default",
   options = [],
+  "data-cy": dataCy,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -117,6 +119,7 @@ export const TextInput: React.FC<TextInputProps> = ({
         placeholder={placeholder}
         required={required}
         disabled={disabled}
+        data-cy={dataCy}
         style={{
           backgroundColor,
           color: textColor,
