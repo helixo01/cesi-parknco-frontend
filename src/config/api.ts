@@ -38,7 +38,7 @@ export const API_ENDPOINTS = {
     BASE: `${API_URL}/api/trips`,
     BY_ID: (tripId: string) => `${API_URL}/api/trips/${tripId}`,
     MY_TRIPS: `${API_URL}/api/trips/my-trips`,
-    SEARCH: (queryString: string) => `${API_URL}/api/trips/search?${queryString}`,
+    SEARCH: `${API_URL}/api/trips/search`,
     REQUESTS: (tripId: string) => `${API_URL}/api/trips/${tripId}/requests`,
     REQUEST_BY_ID: (tripId: string, requestId: string) => `${API_URL}/api/trips/${tripId}/requests/${requestId}`,
     CONFIRM_PICKUP: (tripId: string) => `${API_URL}/api/trips/${tripId}/confirm-pickup`,

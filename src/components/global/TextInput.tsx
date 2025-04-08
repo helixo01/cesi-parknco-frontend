@@ -23,6 +23,9 @@ interface TextInputProps {
   // Options pour le type select
   options?: Option[];
   "data-cy"?: string;
+  // Ajout des propriétés min et max pour les champs date et time
+  min?: string;
+  max?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -38,6 +41,8 @@ export const TextInput: React.FC<TextInputProps> = ({
   variant = "default",
   options = [],
   "data-cy": dataCy,
+  min,
+  max,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -120,6 +125,8 @@ export const TextInput: React.FC<TextInputProps> = ({
         required={required}
         disabled={disabled}
         data-cy={dataCy}
+        min={type === "date" || type === "time" ? min : undefined}
+        max={type === "date" || type === "time" ? max : undefined}
         style={{
           backgroundColor,
           color: textColor,

@@ -65,6 +65,14 @@ export default function InfoPerso() {
   const [initialData, setInitialData] = useState(formData);
   const [isImageChanged, setIsImageChanged] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+
+  // Fonction de validation de l'email
+  const validateEmail = (email: string) => {
+    const validDomains = ['@cesi.fr', '@viacesi.fr'];
+    const isValidDomain = validDomains.some(domain => email.toLowerCase().endsWith(domain));
+    return isValidDomain;
+  };
 
   useEffect(() => {
     if (authLoading) return;
@@ -107,6 +115,13 @@ export default function InfoPerso() {
   }, [isAuthenticated, authLoading, router]);
 
   const handleChange = (field: string) => (value: string) => {
+    if (field === 'email') {
+      setEmailError(null);
+      if (!validateEmail(value)) {
+        setEmailError('L\'email doit se terminer par @cesi.fr ou @viacesi.fr');
+      }
+    }
+
     setFormData((prev) => {
       const newData = { ...prev, [field]: value };
 
@@ -158,10 +173,17 @@ export default function InfoPerso() {
     setEditingFields([]);
     setIsImageChanged(false);
     setError(null);
+    setEmailError(null);
   };
 
   const handleSave = async () => {
     try {
+      // Vérifier l'email avant la sauvegarde
+      if (editingFields.includes('email') && !validateEmail(formData.email)) {
+        setError('L\'email doit se terminer par @cesi.fr ou @viacesi.fr');
+        return;
+      }
+
       const updatedData = await userService.updateUserData({
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -182,6 +204,7 @@ export default function InfoPerso() {
       setEditingFields([]);
       setIsImageChanged(false);
       setError(null);
+      setEmailError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde');
     }
@@ -259,11 +282,13 @@ export default function InfoPerso() {
               type="email"
               value={formData.email}
               onChange={handleChange("email")}
-              variant="light"
-              editable={true}
+              error={emailError || undefined}
+              disabled={!editingFields.includes("email")}
+              editable
               isEditing={editingFields.includes("email")}
               onEditClick={() => handleEditClick("email")}
               required={true}
+              variant="light"
             />
 
             <FormInput

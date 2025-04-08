@@ -24,8 +24,8 @@ interface FormInputProps {
   // Options pour le type select
   options?: Option[];
   // Props spécifiques pour le type number
-  min?: number;
-  max?: number;
+  min?: number | string;
+  max?: number | string;
   // Props pour l'édition
   editable?: boolean;
   isEditing?: boolean;
@@ -114,7 +114,9 @@ export const FormInput: React.FC<FormInputProps> = ({
     // Vérifie si la valeur est un nombre valide
     if (newValue === "" || /^\d+$/.test(newValue)) {
       const numValue = parseInt(newValue);
-      if (newValue === "" || (min === undefined || numValue >= min) && (max === undefined || numValue <= max)) {
+      if (newValue === "" || 
+        (min === undefined || (typeof min === 'number' && numValue >= min)) && 
+        (max === undefined || (typeof max === 'number' && numValue <= max))) {
         onChange(newValue);
       }
     }
