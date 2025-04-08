@@ -9,14 +9,12 @@ interface HeaderProps {
   texteNormal: string;
   texteGras: string;
   texteNormal2?: string;
-  className?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   texteNormal,
   texteGras,
   texteNormal2,
-  className = "",
 }) => {
   const router = useRouter();
 
