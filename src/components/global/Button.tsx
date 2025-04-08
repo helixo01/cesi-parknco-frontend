@@ -7,6 +7,8 @@ interface ButtonProps {
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
+  fullWidth?: boolean;
+  type?: "button" | "submit" | "reset";
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -15,6 +17,8 @@ export const Button: React.FC<ButtonProps> = ({
   onClick,
   className = "",
   disabled = false,
+  fullWidth = true,
+  type = "button",
 }) => {
   const getColors = () => {
     switch (variant) {
@@ -40,10 +44,11 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className={`
-        w-full h-[50px] rounded-3xl font-medium
+        ${fullWidth ? 'w-full' : 'w-auto px-6'} h-[50px] rounded-3xl font-medium
         transition-colors duration-200
         focus:outline-none focus:ring-2 focus:ring-offset-2
         disabled:opacity-50 disabled:cursor-not-allowed

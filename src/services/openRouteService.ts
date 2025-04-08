@@ -14,6 +14,10 @@ export interface Feature {
   properties: {
     label: string;
     country: string;
+    segments?: Array<{
+      distance: number;
+      duration: number;
+    }>;
   };
   geometry: {
     coordinates: [number, number];
@@ -22,6 +26,17 @@ export interface Feature {
 
 export interface GeocodingResponse {
   features: Feature[];
+}
+
+export interface DirectionsResponse {
+  features: Array<{
+    properties: {
+      segments: Array<{
+        distance: number;
+        duration: number;
+      }>;
+    };
+  }>;
 }
 
 const API_BASE_URL = 'https://api.openrouteservice.org';
@@ -117,12 +132,11 @@ export const openRouteService = {
           const label = feature.properties.label;
           return label.replace(/, (France|FR)$/g, '').trim();
         });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting suggestions:', error);
-      if (axios.isAxiosError(error)) {
-        console.error('Response:', error.response?.data);
-        console.error('Status:', error.response?.status);
-        console.error('Config:', error.config);
+      if (error?.response?.data) {
+        console.error('Response:', error.response.data);
+        console.error('Status:', error.response.status);
       }
       return [];
     }
@@ -181,7 +195,7 @@ export const openRouteService = {
       }
 
       // Calculer l'itinéraire avec le format correct des coordonnées
-      const response = await directionsInstance.get('/v2/directions/driving-car', {
+      const response = await directionsInstance.get<DirectionsResponse>('/v2/directions/driving-car', {
         params: {
           start: originCoords.join(','),
           end: destinationCoords.join(',')
@@ -193,46 +207,25 @@ export const openRouteService = {
       }
 
       const route = response.data.features[0];
-      const properties = route.properties;
+      const segments = route.properties.segments;
       
-      if (!properties || typeof properties.segments?.[0]?.distance !== 'number' || 
-          typeof properties.segments?.[0]?.duration !== 'number') {
+      if (!segments || !segments[0]) {
         throw new Error('Format de réponse invalide');
       }
 
-      const distanceInKm = properties.segments[0].distance / 1000;
-      const durationInMinutes = Math.round(properties.segments[0].duration / 60);
-      
-      console.log('Raw route data:', {
-        distance: properties.segments[0].distance,
-        duration: properties.segments[0].duration,
-        distanceInKm,
-        durationInMinutes
-      });
-
-      const distance = distanceInKm.toFixed(1) + ' km';
-      const duration = durationInMinutes + ' min';
-
-      console.log('Formatted route:', { distance, duration });
+      const { distance, duration } = segments[0];
 
       return {
-        distance,
-        duration
+        distance: `${(distance / 1000).toFixed(1)} km`,
+        duration: `${Math.round(duration / 60)} min`
       };
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Error calculating route:', error);
-      
-      if (axios.isAxiosError(error)) {
-        console.error('Response:', error.response?.data);
-        console.error('Status:', error.response?.status);
-        console.error('Config:', error.config);
+      if (error?.response?.data) {
+        console.error('Response:', error.response.data);
+        console.error('Status:', error.response.status);
       }
-      
-      if (error instanceof Error) {
-        throw new Error(`Erreur lors du calcul du trajet: ${error.message}`);
-      }
-      
-      throw new Error('Impossible de calculer l\'itinéraire. Veuillez vérifier vos adresses et réessayer.');
+      throw error;
     }
   }
 };
