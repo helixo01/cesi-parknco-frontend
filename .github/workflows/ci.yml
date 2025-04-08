@@ -30,4 +30,14 @@ jobs:
       env:
         NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         NEXT_PUBLIC_AUTH_API_URL: ${{ secrets.NEXT_PUBLIC_AUTH_API_URL }}
-        DISABLE_ESLINT_PLUGIN: true 
+        DISABLE_ESLINT_PLUGIN: true
+
+    - name: Run Cypress tests
+      uses: cypress-io/github-action@v6
+      with:
+        build: npm run build
+        start: npm start
+        wait-on: 'http://localhost:3000'
+      env:
+        NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+        NEXT_PUBLIC_AUTH_API_URL: ${{ secrets.NEXT_PUBLIC_AUTH_API_URL }} 
