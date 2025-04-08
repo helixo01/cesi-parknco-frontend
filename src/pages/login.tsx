@@ -29,6 +29,7 @@ export default function Login() {
             value={formState.email}
             onChange={(value) => updateField("email", value)}
             required
+            data-cy="email-input"
           />
           <div className="space-y-2">
             <TextInput
@@ -38,6 +39,7 @@ export default function Login() {
               value={formState.password}
               onChange={(value) => updateField("password", value)}
               required
+              data-cy="password-input"
             />
             <HelpText
               text="Mot de passe oublié ?"
@@ -50,6 +52,7 @@ export default function Login() {
             text="Se connecter"
             variant="primary"
             onClick={handleSubmit}
+            data-cy="login-button"
           />
           <div className="space-y-4 text-center">
             <HelpText

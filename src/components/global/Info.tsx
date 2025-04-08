@@ -55,6 +55,7 @@ export const Info: React.FC<InfoProps> = ({
         color: text,
         borderColor: border,
       }}
+      data-cy={type === "error" ? "error-message" : `${type}-message`}
     >
       {message}
     </div>

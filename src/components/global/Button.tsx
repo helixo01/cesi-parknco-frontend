@@ -9,6 +9,7 @@ interface ButtonProps {
   disabled?: boolean;
   fullWidth?: boolean;
   type?: "button" | "submit" | "reset";
+  "data-cy"?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -19,6 +20,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   fullWidth = true,
   type = "button",
+  "data-cy": dataCy,
 }) => {
   const getColors = () => {
     switch (variant) {
@@ -47,6 +49,7 @@ export const Button: React.FC<ButtonProps> = ({
       type={type}
       onClick={onClick}
       disabled={disabled}
+      data-cy={dataCy}
       className={`
         ${fullWidth ? 'w-full' : 'w-auto px-6'} h-[50px] rounded-3xl font-medium
         transition-colors duration-200
