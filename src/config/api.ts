@@ -68,6 +68,6 @@ export const API_ENDPOINTS = {
   // OpenRoute endpoints
   OPENROUTE: {
     GEOCODING: `${OPENROUTE_API_URL}/geocode/search`,
-    DIRECTIONS: `${OPENROUTE_API_URL}/v2/directions`,
+    DIRECTIONS: `${OPENROUTE_API_URL}/v2/directions/driving-car`,
   },
 };
