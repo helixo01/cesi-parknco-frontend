@@ -1,6 +1,4 @@
-import { API_URL } from '@/config/api';
-
-const ADMIN_API_URL = process.env.NEXT_PUBLIC_ADMIN_API_URL || 'http://localhost:5004';
+import { API_ENDPOINTS } from '@/config/api';
 
 export interface GamificationConfig {
   pointsPerKm: number;
@@ -15,7 +13,7 @@ export interface GamificationConfig {
 }
 
 export const getGamificationConfig = async (): Promise<GamificationConfig> => {
-  const response = await fetch(`${ADMIN_API_URL}/api/gamification`, {
+  const response = await fetch(API_ENDPOINTS.GAMIFICATION.BASE, {
     credentials: 'include',
   });
 
@@ -27,7 +25,7 @@ export const getGamificationConfig = async (): Promise<GamificationConfig> => {
 };
 
 export const updateGamificationConfig = async (config: GamificationConfig): Promise<GamificationConfig> => {
-  const response = await fetch(`${ADMIN_API_URL}/api/gamification`, {
+  const response = await fetch(API_ENDPOINTS.GAMIFICATION.BASE, {
     method: 'PUT',
     credentials: 'include',
     headers: {

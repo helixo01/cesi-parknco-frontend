@@ -1,4 +1,4 @@
-import { AUTH_API_URL } from '@/config/api';
+import { API_ENDPOINTS } from '@/config/api';
 
 interface LoginCredentials {
   email: string;
@@ -24,7 +24,7 @@ interface User {
 
 export const authService = {
   login: async (credentials: LoginCredentials) => {
-    const response = await fetch(`${AUTH_API_URL}/api/auth/login`, {
+    const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export const authService = {
   },
 
   register: async (userData: RegisterData) => {
-    const response = await fetch(`${AUTH_API_URL}/api/auth/register`, {
+    const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ export const authService = {
 
   logout: async () => {
     try {
-      const response = await fetch(`${AUTH_API_URL}/api/auth/logout`, {
+      const response = await fetch(API_ENDPOINTS.AUTH.LOGOUT, {
         method: 'POST',
         credentials: 'include',
       });
@@ -84,7 +84,7 @@ export const authService = {
   },
 
   getCurrentUser: async (): Promise<User> => {
-    const response = await fetch(`${AUTH_API_URL}/api/auth/me`, {
+    const response = await fetch(API_ENDPOINTS.AUTH.ME, {
       method: 'GET',
       credentials: 'include',
     });

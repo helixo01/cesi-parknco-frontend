@@ -20,10 +20,10 @@ jobs:
         cache: 'npm'
     
     - name: Install dependencies
-      run: npm install
+      run: npm ci
     
-    - name: Type check
-      run: npm run type-check
+    - name: Check TypeScript
+      run: npm run type-check || npx tsc --noEmit
     
     - name: Lint
       run: npm run lint

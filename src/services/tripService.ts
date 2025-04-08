@@ -1,11 +1,11 @@
 import { Trip } from '@/types/trip';
-import { API_URL } from '@/config/api';
+import { API_ENDPOINTS } from '@/config/api';
 
 export const tripService = {
   // Créer un nouveau trajet
   createTrip: async (tripData: any) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.BASE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export const tripService = {
   // Obtenir tous les trajets
   getAllTrips: async () => {
     try {
-      const response = await fetch(`${API_URL}/api/trips`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.BASE, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ export const tripService = {
   // Obtenir un trajet par son ID
   getTripById: async (tripId: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.BY_ID(tripId), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export const tripService = {
   // Obtenir mes trajets
   getMyTrips: async () => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/my-trips`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.MY_TRIPS, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ export const tripService = {
   // Mettre à jour un trajet
   updateTrip: async (tripId: string, tripData: any) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.BY_ID(tripId), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ export const tripService = {
   // Supprimer un trajet
   deleteTrip: async (tripId: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.BY_ID(tripId), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -146,7 +146,7 @@ export const tripService = {
   // Demander à rejoindre un trajet
   requestToJoin: async (tripId: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/requests`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.REQUESTS(tripId), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ export const tripService = {
   // Accepter une demande de rejoindre un trajet
   acceptRequest: async (tripId: string, requestId: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/requests/${requestId}`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.REQUEST_BY_ID(tripId, requestId), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ export const tripService = {
   // Refuser une demande de rejoindre un trajet
   rejectRequest: async (tripId: string, requestId: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/requests/${requestId}`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.REQUEST_BY_ID(tripId, requestId), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -214,7 +214,7 @@ export const tripService = {
   // Confirmer un trajet en tant que conducteur
   confirmTripPickup: async (tripId: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/confirm-pickup`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.CONFIRM_PICKUP(tripId), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -236,7 +236,7 @@ export const tripService = {
   // Confirmer un trajet en tant que passager
   confirmPickupAsPassenger: async (tripId: string) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/confirm-pickup-passenger`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.CONFIRM_PICKUP_PASSENGER(tripId), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -258,7 +258,7 @@ export const tripService = {
   // Noter un conducteur
   rateDriver: async (tripId: string, rating: number) => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/rate-driver`, {
+      const response = await fetch(`${API_ENDPOINTS.TRIPS.RATE_DRIVER(tripId)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -285,7 +285,7 @@ export const tripService = {
   // Noter un passager
   ratePassenger: async (tripId: string, passengerId: string, rating: number, comment: string = '') => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/rate-passenger`, {
+      const response = await fetch(`${API_ENDPOINTS.TRIPS.RATE_PASSENGER(tripId)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -309,7 +309,7 @@ export const tripService = {
   searchTrips: async (searchParams: any) => {
     try {
       const queryString = new URLSearchParams(searchParams).toString();
-      const response = await fetch(`${API_URL}/api/trips/search?${queryString}`, {
+      const response = await fetch(`${API_ENDPOINTS.TRIPS.SEARCH}?${queryString}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -330,7 +330,7 @@ export const tripService = {
 
   async getUserTripRequests(role: 'driver' | 'passenger') {
     try {
-      const response = await fetch(`${API_URL}/api/users/requests?role=${role}`, {
+      const response = await fetch(API_ENDPOINTS.USERS.REQUESTS(role), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -344,13 +344,14 @@ export const tripService = {
 
       return await response.json();
     } catch (error) {
+      console.error('Erreur:', error);
       throw error;
     }
   },
 
   async getTripRequests(tripId: string) {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/requests`, {
+      const response = await fetch(`${API_ENDPOINTS.TRIPS.REQUESTS(tripId)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -370,13 +371,13 @@ export const tripService = {
 
   async rateTrip(tripId: string, rating: number) {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/rate`, {
+      const response = await fetch(API_ENDPOINTS.TRIPS.RATE(tripId), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ rating })
+        body: JSON.stringify({ rating }),
       });
 
       if (!response.ok) {
@@ -392,7 +393,7 @@ export const tripService = {
 
   async completeTripAndRate(tripId: string, rating: number) {
     try {
-      const response = await fetch(`${API_URL}/api/trips/${tripId}/complete`, {
+      const response = await fetch(`${API_ENDPOINTS.TRIPS.COMPLETE(tripId)}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -416,11 +417,11 @@ export const tripService = {
     try {
       // D'abord confirmer la prise en charge
       console.log('Confirmation de la prise en charge en tant que passager...');
-      await this.confirmPickupAsPassenger(tripId);
+      await tripService.confirmPickupAsPassenger(tripId);
 
       // Ensuite noter le conducteur
       console.log('Notation du conducteur...');
-      const ratingResponse = await this.rateDriver(tripId, rating);
+      const ratingResponse = await tripService.rateDriver(tripId, rating);
 
       return ratingResponse;
     } catch (error) {
@@ -430,7 +431,7 @@ export const tripService = {
   },
 
   async rateAndCompleteAsDriver(tripId: string, passengerId: string, rating: number) {
-    const response = await fetch(`${API_URL}/api/trips/${tripId}/rate-passenger`, {
+    const response = await fetch(`${API_ENDPOINTS.TRIPS.RATE_PASSENGER(tripId)}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -468,7 +469,7 @@ export const tripService = {
   // Obtenir tous les trajets terminés (pour les statistiques admin)
   getAllCompletedTrips: async () => {
     try {
-      const response = await fetch(`${API_URL}/api/trips/admin/completed`, {
+      const response = await fetch(`${API_ENDPOINTS.TRIPS.ADMIN_COMPLETED}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

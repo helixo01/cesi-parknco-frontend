@@ -1,4 +1,4 @@
-import { API_URL } from '@/config/api';
+import { API_ENDPOINTS } from '@/config/api';
 
 export interface Vehicle {
   _id: string;
@@ -15,7 +15,7 @@ export const vehicleService = {
    */
   async getUserVehicles(): Promise<Vehicle[]> {
     try {
-      const response = await fetch(`${API_URL}/api/vehicles`, {
+      const response = await fetch(API_ENDPOINTS.VEHICLES.BASE, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ export const vehicleService = {
    */
   async createVehicle(vehicle: Omit<Vehicle, '_id' | 'createdAt'>): Promise<Vehicle> {
     try {
-      const response = await fetch(`${API_URL}/api/vehicles`, {
+      const response = await fetch(API_ENDPOINTS.VEHICLES.BASE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export const vehicleService = {
    */
   async updateVehicle(id: string, vehicle: Partial<Omit<Vehicle, '_id' | 'createdAt'>>): Promise<Vehicle> {
     try {
-      const response = await fetch(`${API_URL}/api/vehicles/${id}`, {
+      const response = await fetch(API_ENDPOINTS.VEHICLES.BY_ID(id), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export const vehicleService = {
    */
   async deleteVehicle(id: string): Promise<void> {
     try {
-      const response = await fetch(`${API_URL}/api/vehicles/${id}`, {
+      const response = await fetch(API_ENDPOINTS.VEHICLES.BY_ID(id), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

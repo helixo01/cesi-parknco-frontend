@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { API_ENDPOINTS, OPENROUTE_API_URL } from '@/config/api';
 
 export interface RouteInfo {
   distance: string;
@@ -39,12 +40,11 @@ export interface DirectionsResponse {
   }>;
 }
 
-const API_BASE_URL = 'https://api.openrouteservice.org';
 const API_KEY = process.env.NEXT_PUBLIC_OPENROUTESERVICE_API_KEY;
 
 // Instance axios pour le geocoding
 const geocodingInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: OPENROUTE_API_URL,
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ const geocodingInstance = axios.create({
 
 // Instance axios pour le calcul d'itinéraire
 const directionsInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: OPENROUTE_API_URL,
   headers: {
     'Accept': 'application/json, application/geo+json',
     'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export const openRouteService = {
     try {
       checkApiKey();
 
-      const response = await geocodingInstance.get<GeocodingResponse>('/geocode/search', {
+      const response = await geocodingInstance.get<GeocodingResponse>(API_ENDPOINTS.OPENROUTE.GEOCODING.replace(OPENROUTE_API_URL, ''), {
         params: {
           text: query,
           'boundary.country': 'FR',
@@ -150,14 +150,14 @@ export const openRouteService = {
 
       // Convertir les adresses en coordonnées (limité à la France)
       const [originResponse, destinationResponse] = await Promise.all([
-        geocodingInstance.get<GeocodingResponse>('/geocode/search', {
+        geocodingInstance.get<GeocodingResponse>(API_ENDPOINTS.OPENROUTE.GEOCODING.replace(OPENROUTE_API_URL, ''), {
           params: {
             text: origin,
             'boundary.country': 'FR',
             layers: 'locality,neighbourhood'
           }
         }),
-        geocodingInstance.get<GeocodingResponse>('/geocode/search', {
+        geocodingInstance.get<GeocodingResponse>(API_ENDPOINTS.OPENROUTE.GEOCODING.replace(OPENROUTE_API_URL, ''), {
           params: {
             text: destination,
             'boundary.country': 'FR',
@@ -195,7 +195,7 @@ export const openRouteService = {
       }
 
       // Calculer l'itinéraire avec le format correct des coordonnées
-      const response = await directionsInstance.get<DirectionsResponse>('/v2/directions/driving-car', {
+      const response = await directionsInstance.get<DirectionsResponse>(API_ENDPOINTS.OPENROUTE.DIRECTIONS.replace(OPENROUTE_API_URL, ''), {
         params: {
           start: originCoords.join(','),
           end: destinationCoords.join(',')
