@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, FormEvent } from 'react';
@@ -103,8 +104,10 @@ export default function Inscription() {
     return true;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: FormEvent<HTMLFormElement> | React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     
     if (!validateForm()) return;
 
@@ -204,6 +207,7 @@ export default function Inscription() {
             <Button
               text="S'inscrire"
               variant="primary"
+              onClick={() => handleSubmit(new Event('click') as unknown as React.MouseEvent)}
             />
           </form>
           <div className="space-y-4 text-center">

@@ -1,4 +1,4 @@
-import { API_URL } from '@/config';
+import { API_ENDPOINTS } from '@/config/api';
 
 export interface GamificationConfig {
   pointsPerKm: number;
@@ -91,169 +91,151 @@ export interface AllUsersStats {
   pages: number;
 }
 
-export const getUserStats = async (userId: string): Promise<UserStats> => {
-  try {
-    const response = await fetch(`${API_URL}/api/stats/users/${userId}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
+export const statsService = {
+  async getUserStats(userId: string): Promise<UserStats> {
+    try {
+      const response = await fetch(API_ENDPOINTS.STATS.USER(userId), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des statistiques utilisateur');
       }
-    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch user stats');
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw new Error('Erreur lors de la récupération des statistiques utilisateur');
     }
+  },
 
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching user stats:', error);
-    throw error;
-  }
-};
+  async getParkingStats(): Promise<ParkingStats> {
+    try {
+      const response = await fetch(API_ENDPOINTS.STATS.PARKINGS, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
-export const getParkingStats = async (): Promise<ParkingStats> => {
-  try {
-    const response = await fetch(`${API_URL}/api/stats/parkings`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des statistiques de parking');
       }
-    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch parking stats');
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
     }
+  },
 
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching parking stats:', error);
-    throw error;
-  }
-};
+  async getReservationStats(): Promise<ReservationStats> {
+    try {
+      const response = await fetch(API_ENDPOINTS.STATS.RESERVATIONS, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
-export const getReservationStats = async (): Promise<ReservationStats> => {
-  try {
-    const response = await fetch(`${API_URL}/api/stats/reservations`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des statistiques de réservation');
       }
-    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch reservation stats');
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
     }
+  },
 
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching reservation stats:', error);
-    throw error;
-  }
-};
+  async getOccupancyStats(params: string): Promise<OccupancyStats> {
+    try {
+      const response = await fetch(API_ENDPOINTS.STATS.OCCUPANCY(params), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
-export const getOccupancyStats = async (
-  startDate: Date,
-  endDate: Date,
-  interval: 'hour' | 'day' | 'week' | 'month' = 'hour'
-): Promise<OccupancyStats> => {
-  try {
-    const params = new URLSearchParams({
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-      interval
-    });
-
-    const response = await fetch(`${API_URL}/api/stats/occupancy?${params}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des statistiques d\'occupation');
       }
-    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch occupancy stats');
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
     }
+  },
 
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching occupancy stats:', error);
-    throw error;
-  }
-};
+  async getRevenueStats(params: string): Promise<RevenueStats> {
+    try {
+      const response = await fetch(API_ENDPOINTS.STATS.REVENUE(params), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
-export const getRevenueStats = async (
-  startDate: Date,
-  endDate: Date,
-  groupBy: 'day' | 'week' | 'month' = 'day'
-): Promise<RevenueStats> => {
-  try {
-    const params = new URLSearchParams({
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-      groupBy
-    });
-
-    const response = await fetch(`${API_URL}/api/stats/revenue?${params}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des statistiques de revenus');
       }
-    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch revenue stats');
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
     }
+  },
 
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching revenue stats:', error);
-    throw error;
-  }
-};
+  async getUsersStats(page: number, limit: number): Promise<AllUsersStats> {
+    try {
+      const response = await fetch(API_ENDPOINTS.STATS.USERS(page, limit), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
-export const getAllUsersStats = async (page: number = 1, limit: number = 20): Promise<AllUsersStats> => {
-  try {
-    const response = await fetch(`${API_URL}/api/stats/users?page=${page}&limit=${limit}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des statistiques utilisateurs');
       }
-    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch all users stats');
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
     }
+  },
 
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching all users stats:', error);
-    throw error;
-  }
-};
+  async getGamificationStats(): Promise<GamificationConfig> {
+    try {
+      const response = await fetch(API_ENDPOINTS.GAMIFICATION.BASE, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
-export const getGamificationConfig = async (): Promise<GamificationConfig> => {
-  try {
-    const response = await fetch(`${API_URL}/api/gamification`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des statistiques de gamification');
       }
-    });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch gamification config');
+      return await response.json();
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching gamification config:', error);
-    throw error;
-  }
+  },
 }; 

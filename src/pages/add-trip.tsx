@@ -53,6 +53,53 @@ export default function AddTrip() {
 
   const { errors, validateForm, setErrors } = useTripFormValidation(formData);
 
+  // Obtenir la date et l'heure minimales (maintenant)
+  const now = new Date();
+  const minDate = now.toISOString().split('T')[0];
+  const currentHour = now.getHours().toString().padStart(2, '0');
+  const currentMinute = now.getMinutes().toString().padStart(2, '0');
+  const minTime = `${currentHour}:${currentMinute}`;
+
+  // Fonction pour vérifier si une date et une heure sont valides
+  const isDateTimeValid = (selectedDate: string, selectedTime: string) => {
+    if (!selectedDate || !selectedTime) return true;
+    
+    const selected = new Date(`${selectedDate}T${selectedTime}`);
+    return selected > now;
+  };
+
+  // Handler pour le changement de date
+  const handleDateChange = (value: string) => {
+    setDate(value);
+    // Si la date sélectionnée est aujourd'hui, vérifier l'heure
+    if (value === minDate && time && !isDateTimeValid(value, time)) {
+      setTime(''); // Réinitialiser l'heure si elle est dans le passé
+    }
+  };
+
+  // Handler pour le changement d'heure
+  const handleTimeChange = (value: string) => {
+    if (date === minDate) {
+      const [hours, minutes] = value.split(':').map(Number);
+      const selectedTime = new Date();
+      selectedTime.setHours(hours, minutes, 0, 0);
+
+      if (selectedTime > now) {
+        setTime(value);
+        setErrorMessage('');
+        setShowError(false);
+      } else {
+        setTime(value);
+        setErrorMessage('Veuillez sélectionner une heure future');
+        setShowError(true);
+      }
+    } else {
+      setTime(value);
+      setErrorMessage('');
+      setShowError(false);
+    }
+  };
+
   const calculateRoute = async () => {
     try {
       console.log('Calculating route between:', departure, 'and', arrival);
@@ -300,17 +347,19 @@ export default function AddTrip() {
               label="Date"
               type="date"
               value={date}
-              onChange={setDate}
+              onChange={handleDateChange}
+              min={minDate}
               error={errors.date}
-              required={true}
+              required
             />
             <TextInput
               label="Heure"
               type="time"
               value={time}
-              onChange={setTime}
+              onChange={handleTimeChange}
+              min={date === minDate ? minTime : undefined}
               error={errors.time}
-              required={true}
+              required
             />
           </div>
           <VehicleSection

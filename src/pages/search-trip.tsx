@@ -27,6 +27,50 @@ export default function SearchTrip() {
   const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
 
+  // Obtenir la date et l'heure minimales (maintenant)
+  const now = new Date();
+  const minDate = now.toISOString().split('T')[0];
+  const currentHour = now.getHours().toString().padStart(2, '0');
+  const currentMinute = now.getMinutes().toString().padStart(2, '0');
+  const minTime = `${currentHour}:${currentMinute}`;
+
+  // Fonction pour vérifier si une date et une heure sont valides
+  const isDateTimeValid = (selectedDate: string, selectedTime: string) => {
+    if (!selectedDate || !selectedTime) return true;
+    const selected = new Date(`${selectedDate}T${selectedTime}`);
+    return selected > now;
+  };
+
+  // Handler pour le changement de date
+  const handleDateChange = (value: string) => {
+    setDate(value);
+    setError(null);
+    // Si la date sélectionnée est aujourd'hui, vérifier l'heure
+    if (value === minDate && time && !isDateTimeValid(value, time)) {
+      setTime(''); // Réinitialiser l'heure si elle est dans le passé
+    }
+  };
+
+  // Handler pour le changement d'heure
+  const handleTimeChange = (value: string) => {
+    if (date === minDate) {
+      const [hours, minutes] = value.split(':').map(Number);
+      const selectedTime = new Date();
+      selectedTime.setHours(hours, minutes, 0, 0);
+
+      if (selectedTime > now) {
+        setTime(value);
+        setError(null);
+      } else {
+        setTime(value);
+        setError('Veuillez sélectionner une heure future');
+      }
+    } else {
+      setTime(value);
+      setError(null);
+    }
+  };
+
   useEffect(() => {
     if (authLoading) return;
 
@@ -47,6 +91,12 @@ export default function SearchTrip() {
         return;
       }
 
+      // Vérifier que la date et l'heure sont valides
+      if (!isDateTimeValid(date, time)) {
+        setError('Veuillez sélectionner une date et une heure futures');
+        return;
+      }
+
       // Rechercher les trajets
       const searchParams = {
         departure,
@@ -59,7 +109,7 @@ export default function SearchTrip() {
       setTrips(trips);
 
       // Afficher un message si aucun trajet n'est trouvé
-      if (trips.length === 0) {
+      if (!trips || trips.length === 0) {
         setError('Aucun trajet trouvé');
       }
     } catch (error) {
@@ -114,7 +164,8 @@ export default function SearchTrip() {
               label="Date"
               type="date"
               value={date}
-              onChange={setDate}
+              onChange={handleDateChange}
+              min={minDate}
               required
               variant="light"
             />
@@ -123,7 +174,8 @@ export default function SearchTrip() {
               label="Heure"
               type="time"
               value={time}
-              onChange={setTime}
+              onChange={handleTimeChange}
+              min={date === minDate ? minTime : undefined}
               required
               variant="light"
             />
@@ -146,13 +198,13 @@ export default function SearchTrip() {
             </div>
           )}
 
-          {trips.length > 0 && (
+          {trips && trips.length > 0 && (
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-white">
                 {trips.length} trajet(s) trouvé(s)
               </h2>
               <div className="space-y-4">
-                {trips.map((trip) => (
+                {trips.map((trip: Trip) => (
                   <div key={trip._id} onClick={() => handleTripClick(trip)} className="cursor-pointer">
                     <TrajetItem trip={trip} />
                   </div>

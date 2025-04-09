@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AUTH_API_URL } from '@/config/api';
+import { API_ENDPOINTS } from '@/config/api';
 
 interface User {
   id: string;
@@ -27,8 +27,11 @@ export const useAuth = (): AuthState => {
     const checkAuth = async () => {
       try {
         // Vérifier le token avec le backend
-        const response = await fetch(`${AUTH_API_URL}/api/auth/verify`, {
+        const response = await fetch(API_ENDPOINTS.AUTH.VERIFY, {
           credentials: 'include', // Important pour les cookies
+          headers: {
+            'Content-Type': 'application/json',
+          },
         });
 
         if (response.ok) {

@@ -306,9 +306,20 @@ export const tripService = {
   },
 
   // Rechercher des trajets
-  searchTrips: async (searchParams: any) => {
+  searchTrips: async (searchParams: { departure: string; arrival: string; date: string; time: string }) => {
     try {
-      const queryString = new URLSearchParams(searchParams).toString();
+      // Formater la date au format ISO
+      const formattedDate = new Date(searchParams.date).toISOString().split('T')[0];
+      
+      // Ajouter le statut "active" pour ne récupérer que les trajets non terminés
+      const queryParams = {
+        ...searchParams,
+        date: formattedDate,
+        status: 'active'
+      };
+      
+      const queryString = new URLSearchParams(queryParams).toString();
+      
       const response = await fetch(`${API_ENDPOINTS.TRIPS.SEARCH}?${queryString}`, {
         method: 'GET',
         headers: {
@@ -321,9 +332,9 @@ export const tripService = {
         throw new Error('Erreur lors de la recherche de trajets');
       }
 
-      return await response.json();
+      const trips = await response.json();
+      return trips;
     } catch (error) {
-      console.error('Erreur:', error);
       throw error;
     }
   },

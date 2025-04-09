@@ -1,4 +1,4 @@
-import { API_URL, AUTH_API_URL, IMAGES_URL } from '@/config/api';
+import { API_URL, AUTH_API_URL, IMAGES_URL, API_ENDPOINTS } from '@/config/api';
 
 interface UserData {
   firstName: string;
@@ -42,7 +42,7 @@ export const userService = {
    */
   async getUserData(): Promise<UserData> {
     try {
-      const response = await fetch(`${AUTH_API_URL}/api/auth/me`, {
+      const response = await fetch(API_ENDPOINTS.AUTH.ME, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +56,6 @@ export const userService = {
 
       const data = await response.json();
       
-      // Extraire les données utilisateur de la structure de réponse
       if (data && data.user) {
         return {
           firstName: data.user.firstName,
@@ -84,7 +83,7 @@ export const userService = {
    */
   async getUserById(userId: string): Promise<{ firstName: string; lastName: string; profilePicture?: string }> {
     try {
-      const response = await fetch(`${AUTH_API_URL}/api/users/public/${userId}`, {
+      const response = await fetch(API_ENDPOINTS.USERS.PUBLIC(userId), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -92,6 +91,14 @@ export const userService = {
         credentials: 'include',
       });
 
+      if (response.status === 404) {
+        throw new Error('Utilisateur non trouvé');
+      }
+      
+      if (response.status === 401) {
+        throw new Error('Session expirée, veuillez vous reconnecter');
+      }
+      
       if (!response.ok) {
         throw new Error('Erreur lors de la récupération des informations utilisateur');
       }
@@ -103,15 +110,7 @@ export const userService = {
       };
     } catch (error: any) {
       console.error('Erreur getUserById:', error);
-      if (error.response?.status === 404) {
-        throw new Error('Utilisateur non trouvé');
-      } else if (error.response?.status === 401) {
-        throw new Error('Session expirée, veuillez vous reconnecter');
-      } else if (error.response?.data?.message) {
-        throw new Error(error.response.data.message);
-      } else {
-        throw new Error('Erreur lors de la récupération des informations utilisateur');
-      }
+      throw error;
     }
   },
 
@@ -122,7 +121,7 @@ export const userService = {
    */
   async updateUserData(userData: Partial<UserData>): Promise<UserData> {
     try {
-      const response = await fetch(`${AUTH_API_URL}/api/auth/me`, {
+      const response = await fetch(API_ENDPOINTS.AUTH.ME, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +136,6 @@ export const userService = {
 
       const data = await response.json();
       
-      // Extraire les données utilisateur de la structure de réponse
       if (data && data.user) {
         return {
           firstName: data.user.firstName,
@@ -168,7 +166,7 @@ export const userService = {
       const formData = new FormData();
       formData.append('profilePicture', file);
 
-      const response = await fetch(`${AUTH_API_URL}/api/auth/profile-picture`, {
+      const response = await fetch(API_ENDPOINTS.AUTH.PROFILE_PICTURE, {
         method: 'POST',
         credentials: 'include',
         body: formData,
@@ -188,7 +186,7 @@ export const userService = {
 
   async getCurrentUser(): Promise<User> {
     try {
-      const response = await fetch(`${API_URL}/api/users/me`, {
+      const response = await fetch(API_ENDPOINTS.USERS.ME, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -200,16 +198,16 @@ export const userService = {
         throw new Error('Erreur lors de la récupération de votre profil');
       }
 
-      return response.json();
+      return await response.json();
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('Erreur getCurrentUser:', error);
       throw error;
     }
   },
 
   getProfile: async () => {
     try {
-      const response = await fetch(`${AUTH_API_URL}/api/auth/me`, {
+      const response = await fetch(`${AUTH_API_URL}/me`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -230,7 +228,7 @@ export const userService = {
 
   updateProfile: async (data: UpdateUserData) => {
     try {
-      const response = await fetch(`${AUTH_API_URL}/api/auth/me`, {
+      const response = await fetch(`${AUTH_API_URL}/me`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -257,22 +255,36 @@ export const userService = {
     }
   },
 
-  changePassword: async (data: ChangePasswordData) => {
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
     try {
-      const response = await fetch(`${AUTH_API_URL}/api/auth/change-password`, {
-        method: 'PUT',
+      const response = await fetch(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(data),
+        body: JSON.stringify({ currentPassword, newPassword }),
       });
 
       if (!response.ok) {
         throw new Error('Erreur lors du changement de mot de passe');
       }
+    } catch (error) {
+      console.error('Erreur:', error);
+      throw error;
+    }
+  },
 
-      return await response.json();
+  async deleteProfilePicture(): Promise<void> {
+    try {
+      const response = await fetch(API_ENDPOINTS.AUTH.PROFILE_PICTURE, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la suppression de la photo de profil');
+      }
     } catch (error) {
       console.error('Erreur:', error);
       throw error;
@@ -284,7 +296,7 @@ export const userService = {
       const formData = new FormData();
       formData.append('profilePicture', file);
 
-      const response = await fetch(`${AUTH_API_URL}/api/auth/profile-picture`, {
+      const response = await fetch(`${AUTH_API_URL}/profile-picture`, {
         method: 'POST',
         credentials: 'include',
         body: formData,
@@ -304,7 +316,7 @@ export const userService = {
 
   deleteAccount: async () => {
     try {
-      const response = await fetch(`${AUTH_API_URL}/api/auth/me`, {
+      const response = await fetch(`${AUTH_API_URL}/me`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

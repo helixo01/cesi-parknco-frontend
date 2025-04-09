@@ -197,8 +197,8 @@ export const openRouteService = {
       // Calculer l'itinéraire avec le format correct des coordonnées
       const response = await directionsInstance.get<DirectionsResponse>(API_ENDPOINTS.OPENROUTE.DIRECTIONS.replace(OPENROUTE_API_URL, ''), {
         params: {
-          start: originCoords.join(','),
-          end: destinationCoords.join(',')
+          start: `${originCoords[0]},${originCoords[1]}`,
+          end: `${destinationCoords[0]},${destinationCoords[1]}`
         }
       });
 

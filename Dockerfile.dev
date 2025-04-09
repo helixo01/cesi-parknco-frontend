@@ -1,0 +1,21 @@
+FROM node:lts-alpine
+
+WORKDIR /app
+
+# Installation des dépendances globales
+
+
+# Copie des fichiers de configuration
+COPY package*.json /
+
+# Installation des dépendances
+RUN npm install
+
+# Copie du reste du code
+COPY . .
+
+# Exposition du port
+EXPOSE 3000
+
+# Commande de démarrage
+CMD ["npm", "run", "dev"] 

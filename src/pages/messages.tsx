@@ -11,7 +11,7 @@ import { useRouter } from 'next/router';
 import { Division } from '@/components/global/Division';
 import Message from '@/components/global/Message';
 import { userService } from '@/services/userService';
-import { getUserStats } from '@/services/statsService';
+import { statsService } from '@/services/statsService';
 
 interface Trip {
   _id: string;
@@ -96,7 +96,7 @@ export default function Messages() {
           try {
             passengerInfo = await userService.getUserById(request.userId);
             // Récupérer les statistiques du passager
-            const passengerStats = await getUserStats(request.userId);
+            const passengerStats = await statsService.getUserStats(request.userId);
             passengerInfo = {
               ...passengerInfo,
               averageRating: passengerStats.averageRating
@@ -138,7 +138,7 @@ export default function Messages() {
           try {
             driverInfo = await userService.getUserById(trip.userId);
             // Récupérer les statistiques du conducteur
-            const driverStats = await getUserStats(trip.userId);
+            const driverStats = await statsService.getUserStats(trip.userId);
             driverInfo = {
               ...driverInfo,
               averageRating: driverStats.averageRating
