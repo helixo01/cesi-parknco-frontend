@@ -227,12 +227,12 @@ export const getAllUsersStats = async (page: number = 1, limit: number = 20): Pr
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch all users stats');
+      throw new Error('Failed to fetch users stats');
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error fetching all users stats:', error);
+    console.error('Error fetching users stats:', error);
     throw error;
   }
 };

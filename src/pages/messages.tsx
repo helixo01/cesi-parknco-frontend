@@ -273,7 +273,7 @@ export default function Messages() {
         )}
       </div>
 
-      <NavBar />
+      <NavBar activePage="messages" />
     </div>
   );
 } 

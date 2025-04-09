@@ -147,7 +147,7 @@ const UserPoints: React.FC<UserPointsProps> = ({ userId }) => {
           </div>
         </div>
         <div className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 text-center mb-4">
-          {Number(stats.totalPoints).toFixed(2)}
+          {Math.floor(stats.totalPoints)}
           <div className="text-gray-400 text-base mt-2 font-normal">points</div>
         </div>
         <div className="mt-6 text-center space-y-2">
@@ -184,7 +184,7 @@ const UserPoints: React.FC<UserPointsProps> = ({ userId }) => {
               </div>
               <div className="flex items-center">
                 <span className="text-white font-bold bg-black bg-opacity-30 px-3 py-1 rounded-full">
-                  {Number(user.points).toFixed(2)} pts
+                  {Math.floor(user.points)}
                 </span>
               </div>
             </div>
