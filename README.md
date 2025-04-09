@@ -1,40 +1,166 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Park'n'Co - Application Frontend
 
-## Getting Started
+Ce projet est l'interface utilisateur de l'application Park'n'Co, développée avec [Next.js](https://nextjs.org).
 
-First, run the development server:
+## Description
 
+Park'n'Co est une application de gestion de parkings intelligents qui permet aux utilisateurs de :
+- Créer un compte et gérer leur profil utilisateur
+- Trouver et réserver des places de parking en temps réel
+- Consulter l'historique de leurs réservations
+- Interagir avec les services IoT des parkings
+- Recevoir des notifications sur l'état de leurs réservations
+- Gérer leurs véhicules
+- Participer à un système de gamification
+- Consulter des statistiques d'utilisation
+- Échanger des messages avec d'autres utilisateurs
+- Noter et évaluer les autres utilisateurs
+
+## Technologies Utilisées
+
+- Next.js
+- TypeScript pour un typage fort
+- Tailwind CSS pour le styling
+- Axios pour les requêtes complexes vers les microservices
+- Fetch API pour les requêtes simples
+- Cypress pour les tests E2E
+- JWT pour l'authentification
+- OpenRoute API pour les services de géolocalisation
+- ESLint pour le linting du code
+
+## Prérequis
+
+- Node.js (version 16 ou supérieure)
+- npm ou yarn
+- Un navigateur web moderne (Chrome, Firefox, Safari, Edge)
+- Le backend Park'n'Co en cours d'exécution en local
+
+## Installation
+
+1. Clonez le dépôt :
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone [URL_DU_REPO]
+cd cesi-parknco-frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Installez les dépendances :
+```bash
+npm install
+# ou
+yarn install
+```
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+3. Configurez les variables d'environnement :
+Créez un fichier `.env.local` à la racine du projet avec les variables suivantes :
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_AUTH_SERVICE_URL=http://localhost:3002
+NEXT_PUBLIC_IOT_SERVICE_URL=http://localhost:3003
+NEXT_PUBLIC_METIER_SERVICE_URL=http://localhost:3004
+NEXT_PUBLIC_ADMIN_SERVICE_URL=http://localhost:3005
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+4. Assurez-vous que le backend est en cours d'exécution :
+- Le service d'authentification doit être lancé sur le port 3002
+- Le service IoT doit être lancé sur le port 3003
+- Le service métier doit être lancé sur le port 3004
+- Le service administrateur doit être lancé sur le port 3005
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+5. Lancez le serveur de développement :
+```bash
+npm run dev
+# ou
+yarn dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+L'application sera accessible à l'adresse [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+## Structure du Projet
 
-To learn more about Next.js, take a look at the following resources:
+- `/src` : Code source principal
+  - `/components` : Composants React réutilisables
+    - `/global` : Composants globaux (header, footer, formulaires, etc.)
+    - `/trip` : Composants liés aux trajets
+    - `/stats` : Composants pour les statistiques
+    - `/admin` : Composants pour l'interface administrateur
+  - `/pages` : Routes et pages de l'application Next.js
+    - `/profile` : Pages de gestion du profil et des véhicules
+    - `/admin` : Pages d'administration (utilisateurs, statistiques, gamification)
+    - `/api` : Routes API internes
+  - `/services` : Services d'API et de gestion des données
+    - `auth.ts` : Service d'authentification
+    - `tripService.ts` : Service de gestion des trajets
+    - `vehicleService.ts` : Service de gestion des véhicules
+    - `userService.ts` : Service de gestion des utilisateurs
+    - `statsService.ts` : Service de statistiques
+    - `gamificationService.ts` : Service de gamification
+    - `openRouteService.ts` : Service d'intégration avec OpenRoute API
+  - `/hooks` : Hooks React personnalisés
+    - `useAuth.ts` : Hook de gestion de l'authentification
+    - `useVehicles.ts` : Hook de gestion des véhicules
+    - `useLoginForm.ts` : Hook de gestion du formulaire de connexion
+    - `useTripFormValidation.ts` : Hook de validation des formulaires de trajet
+  - `/config` : Fichiers de configuration
+    - `api.ts` : Configuration des endpoints API
+  - `/styles` : Fichiers CSS et configurations de style
+  - `/types` : Définitions de types TypeScript
+    - `trip.ts` : Types liés aux trajets
+- `/public` : Assets statiques (images, icônes)
+- `/cypress` : Tests E2E avec Cypress
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+## Tests
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Pour lancer les tests unitaires :
+```bash
+npm run test
+# ou
+yarn test
+```
 
-## Deploy on Vercel
+Pour les tests E2E avec Cypress :
+```bash
+npm run cypress:open
+# ou
+yarn cypress:open
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Fonctionnalités Principales
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+### Authentification
+- Inscription avec email et mot de passe
+- Connexion sécurisée
+- Récupération de mot de passe
+- Gestion de session
+- Gestion de la photo de profil
+
+### Gestion des Parkings
+- Recherche de parkings par localisation
+- Affichage des places disponibles en temps réel
+- Réservation de places
+- Historique des réservations
+
+### Gestion des Véhicules
+- Ajout et modification de véhicules
+- Association de véhicules au compte utilisateur
+
+### Messagerie
+- Échange de messages entre utilisateurs
+- Notifications de nouveaux messages
+
+### Système de Notation
+- Évaluation des conducteurs par les passagers
+- Évaluation des passagers par les conducteurs
+- Affichage des notes moyennes
+
+### Gamification
+- Système de points et de récompenses
+- Suivi des statistiques d'utilisation
+
+### Administration
+- Interface dédiée pour les administrateurs
+- Gestion des utilisateurs et des parkings
+- Consultation des statistiques globales
+- Configuration du système de gamification
+
+### Application Mobile First
+L'application a été conçue en suivant une approche "Mobile First", optimisée pour une utilisation sur smartphones et tablettes, tout en restant accessible sur desktop.
