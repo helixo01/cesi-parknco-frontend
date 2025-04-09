@@ -22,6 +22,10 @@ interface TextInputProps {
   variant?: "default" | "light" | "error";
   // Options pour le type select
   options?: Option[];
+  "data-cy"?: string;
+  // Ajout des propriétés min et max pour les champs date et time
+  min?: string;
+  max?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -36,6 +40,9 @@ export const TextInput: React.FC<TextInputProps> = ({
   disabled = false,
   variant = "default",
   options = [],
+  "data-cy": dataCy,
+  min,
+  max,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -50,14 +57,14 @@ export const TextInput: React.FC<TextInputProps> = ({
         };
       case "error":
         return {
-          backgroundColor: colors.background.error,
+          backgroundColor: colors.background.input,
           textColor: colors.text.primary,
-          labelColor: colors.state.error,
+          labelColor: colors.text.label,
           placeholderColor: colors.text.placeholder,
         };
       default:
         return {
-          backgroundColor: "#FFFFFF",
+          backgroundColor: colors.background.input,
           textColor: colors.text.primary,
           labelColor: colors.text.label,
           placeholderColor: colors.text.placeholder,
@@ -117,6 +124,9 @@ export const TextInput: React.FC<TextInputProps> = ({
         placeholder={placeholder}
         required={required}
         disabled={disabled}
+        data-cy={dataCy}
+        min={type === "date" || type === "time" ? min : undefined}
+        max={type === "date" || type === "time" ? max : undefined}
         style={{
           backgroundColor,
           color: textColor,
@@ -150,7 +160,12 @@ export const TextInput: React.FC<TextInputProps> = ({
           fontSize: "14px"
         }}
       >
-        {label}
+        <span>{label}</span>
+        {required && (
+          <span className="ml-1 font-medium" style={{ color: colors.state.error }}>
+            *
+          </span>
+        )}
       </label>
       <div className="relative">
         {renderInput()}

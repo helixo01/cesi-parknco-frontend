@@ -9,6 +9,8 @@ import { Division } from "@/components/global/Division";
 import { Info } from "@/components/global/Info";
 import { HelpText } from "@/components/global/HelpText";
 import { colors } from "@/styles/colors";
+import { authService } from "@/services/auth";
+import { CheckboxInput } from "@/components/global/CheckboxInput";
 
 interface FormData {
   nom: string;
@@ -16,6 +18,7 @@ interface FormData {
   email: string;
   motDePasse: string;
   confirmationMotDePasse: string;
+  acceptConditions: boolean;
 }
 
 export default function Inscription() {
@@ -25,7 +28,8 @@ export default function Inscription() {
     prenom: '',
     email: '',
     motDePasse: '',
-    confirmationMotDePasse: ''
+    confirmationMotDePasse: '',
+    acceptConditions: false
   });
   const [infoMessage, setInfoMessage] = useState<string>('');
   const [infoType, setInfoType] = useState<'error' | 'success'>('error');
@@ -53,9 +57,9 @@ export default function Inscription() {
       return false;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@(viacesi|cesi)\.fr$/;
     if (!emailRegex.test(formData.email)) {
-      setInfoMessage('L\'email n\'est pas valide');
+      setInfoMessage('L\'email doit être une adresse CESI valide (contenant @viacesi.fr ou @cesi.fr)');
       setInfoType('error');
       setShowInfo(true);
       return false;
@@ -89,35 +93,46 @@ export default function Inscription() {
       return false;
     }
 
+    if (!formData.acceptConditions) {
+      setInfoMessage('Vous devez accepter les conditions générales d\'utilisation');
+      setInfoType('error');
+      setShowInfo(true);
+      return false;
+    }
+
     return true;
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setShowInfo(false);
-
-    if (!validateForm()) {
-      return;
+  const handleSubmit = async (e: FormEvent<HTMLFormElement> | React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
     }
+    
+    if (!validateForm()) return;
 
     try {
-      // TODO: Implémenter l'appel API pour créer le compte
-      console.log('Données du formulaire:', formData);
-      setInfoMessage('Compte créé avec succès !');
+      await authService.register({
+        nom: formData.nom,
+        prenom: formData.prenom,
+        email: formData.email,
+        motDePasse: formData.motDePasse,
+      });
+
+      setInfoMessage('Inscription réussie ! Redirection vers la page de connexion...');
       setInfoType('success');
       setShowInfo(true);
-      // Redirection après un court délai pour montrer le message de succès
+
       setTimeout(() => {
         router.push('/login');
       }, 2000);
-    } catch (err) {
+    } catch (error) {
       setInfoMessage('Une erreur est survenue lors de l\'inscription');
       setInfoType('error');
       setShowInfo(true);
     }
   };
 
-  const updateField = (field: keyof FormData, value: string) => {
+  const updateField = (field: keyof FormData, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -145,6 +160,7 @@ export default function Inscription() {
               placeholder="Entrez votre nom"
               value={formData.nom}
               onChange={(value) => updateField("nom", value)}
+              required={true}
             />
             <TextInput
               label="Prénom"
@@ -152,6 +168,7 @@ export default function Inscription() {
               placeholder="Entrez votre prénom"
               value={formData.prenom}
               onChange={(value) => updateField("prenom", value)}
+              required={true}
             />
             <TextInput
               label="Email"
@@ -159,6 +176,7 @@ export default function Inscription() {
               placeholder="Entrez votre email"
               value={formData.email}
               onChange={(value) => updateField("email", value)}
+              required={true}
             />
             <TextInput
               label="Mot de passe"
@@ -166,6 +184,7 @@ export default function Inscription() {
               placeholder="Entrez votre mot de passe"
               value={formData.motDePasse}
               onChange={(value) => updateField("motDePasse", value)}
+              required={true}
             />
             <TextInput
               label="Confirmer le mot de passe"
@@ -173,11 +192,21 @@ export default function Inscription() {
               placeholder="Confirmez votre mot de passe"
               value={formData.confirmationMotDePasse}
               onChange={(value) => updateField("confirmationMotDePasse", value)}
+              required={true}
+            />
+            <CheckboxInput
+              label="J'accepte les"
+              linkText="conditions générales d'utilisation"
+              linkHref="/conditions-generales"
+              checked={formData.acceptConditions}
+              onChange={(checked) => updateField("acceptConditions", checked)}
+              required
+              error={!formData.acceptConditions && showInfo ? "Vous devez accepter les conditions générales" : undefined}
             />
             <Button
               text="S'inscrire"
               variant="primary"
-              onClick={() => handleSubmit(new Event('submit') as unknown as FormEvent<HTMLFormElement>)}
+              onClick={() => handleSubmit(new Event('click') as unknown as React.MouseEvent)}
             />
           </form>
           <div className="space-y-4 text-center">

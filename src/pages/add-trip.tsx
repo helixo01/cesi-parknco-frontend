@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from 'next/router';
 import { NavBar } from "@/components/global/NavBar";
 import { Header } from "@/components/global/Header";
 import { TextInput } from "@/components/global/TextInput";
@@ -7,40 +8,271 @@ import { VehicleSection } from "@/components/trip/VehicleSection";
 import { useVehicles } from "@/hooks/useVehicles";
 import { useTripFormValidation } from "@/hooks/useTripFormValidation";
 import { colors } from "@/styles/colors";
-import { TripFormData } from "@/types/trip";
+import { tripService } from "@/services/tripService";
+import { openRouteService } from "@/services/openRouteService";
+import { Trip, TripFormErrors } from "@/types/trip";
+import PopUpConfirmation from "@/components/global/PopUpConfirmation";
 
 export default function AddTrip() {
+  const router = useRouter();
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
+  const [departureSuggestions, setDepartureSuggestions] = useState<string[]>([]);
+  const [arrivalSuggestions, setArrivalSuggestions] = useState<string[]>([]);
+  const [selectedDeparture, setSelectedDeparture] = useState<string | null>(null);
+  const [selectedArrival, setSelectedArrival] = useState<string | null>(null);
+  const [routeCalculationTimeout, setRouteCalculationTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const {
     vehicles,
     selectedVehicle,
     remainingSeats,
     vehicleType,
+    loading: vehiclesLoading,
     setRemainingSeats,
     setVehicleType,
     handleVehicleChange
   } = useVehicles();
 
-  const formData: TripFormData = {
+  const formData = {
     departure,
     arrival,
     date,
     time,
-    selectedVehicle,
+    selectedVehicle: selectedVehicle?.id,
     remainingSeats,
-    vehicleType
+    vehicleType,
   };
 
-  const { errors, validateForm } = useTripFormValidation(formData);
+  const { errors, validateForm, setErrors } = useTripFormValidation(formData);
+
+  // Obtenir la date et l'heure minimales (maintenant)
+  const now = new Date();
+  const minDate = now.toISOString().split('T')[0];
+  const currentHour = now.getHours().toString().padStart(2, '0');
+  const currentMinute = now.getMinutes().toString().padStart(2, '0');
+  const minTime = `${currentHour}:${currentMinute}`;
+
+  // Fonction pour vérifier si une date et une heure sont valides
+  const isDateTimeValid = (selectedDate: string, selectedTime: string) => {
+    if (!selectedDate || !selectedTime) return true;
+    
+    const selected = new Date(`${selectedDate}T${selectedTime}`);
+    return selected > now;
+  };
+
+  // Handler pour le changement de date
+  const handleDateChange = (value: string) => {
+    setDate(value);
+    // Si la date sélectionnée est aujourd'hui, vérifier l'heure
+    if (value === minDate && time && !isDateTimeValid(value, time)) {
+      setTime(''); // Réinitialiser l'heure si elle est dans le passé
+    }
+  };
+
+  // Handler pour le changement d'heure
+  const handleTimeChange = (value: string) => {
+    if (date === minDate) {
+      const [hours, minutes] = value.split(':').map(Number);
+      const selectedTime = new Date();
+      selectedTime.setHours(hours, minutes, 0, 0);
+
+      if (selectedTime > now) {
+        setTime(value);
+        setErrorMessage('');
+        setShowError(false);
+      } else {
+        setTime(value);
+        setErrorMessage('Veuillez sélectionner une heure future');
+        setShowError(true);
+      }
+    } else {
+      setTime(value);
+      setErrorMessage('');
+      setShowError(false);
+    }
+  };
+
+  const calculateRoute = async () => {
+    try {
+      console.log('Calculating route between:', departure, 'and', arrival);
+      
+      // Vérifier que les deux villes sont sélectionnées
+      if (!departure || !arrival) {
+        console.log('Missing addresses');
+        setRouteInfo(null);
+        return null;
+      }
+
+      const info = await openRouteService.calculateRoute(departure, arrival);
+      console.log('Route info:', info);
+      
+      if (!info) {
+        console.log('No route info returned');
+        setRouteInfo(null);
+        setErrorMessage('Impossible de calculer le trajet');
+        setShowError(true);
+        return null;
+      }
+
+      setRouteInfo(info);
+      setErrorMessage('');
+      setShowError(false);
+      return info;
+    } catch (error) {
+      console.error('Error calculating route:', error);
+      setRouteInfo(null);
+      setErrorMessage(error instanceof Error ? error.message : 'Impossible de calculer le trajet');
+      setShowError(true);
+      return null;
+    }
+  };
+
+  const handleDepartureChange = (value: string) => {
+    setDeparture(value);
+    setErrorMessage('');
+    setSelectedDeparture(null);
+    
+    // Annuler le timeout précédent s'il existe
+    if (routeCalculationTimeout) {
+      clearTimeout(routeCalculationTimeout);
+    }
+
+    // Rechercher les suggestions d'adresses
+    if (value.length >= 2) {
+      openRouteService.getSuggestions(value, 'departure').then(suggestions => {
+        setDepartureSuggestions(suggestions);
+      });
+    } else {
+      setDepartureSuggestions([]);
+    }
+  };
+
+  const handleArrivalChange = (value: string) => {
+    setArrival(value);
+    setErrorMessage('');
+    setSelectedArrival(null);
+    
+    // Annuler le timeout précédent s'il existe
+    if (routeCalculationTimeout) {
+      clearTimeout(routeCalculationTimeout);
+    }
+
+    // Rechercher les suggestions d'adresses
+    if (value.length >= 2) {
+      openRouteService.getSuggestions(value, 'arrival').then(suggestions => {
+        setArrivalSuggestions(suggestions);
+      });
+    } else {
+      setArrivalSuggestions([]);
+    }
+  };
+
+  const handleSelectAddress = (address: string, type: 'departure' | 'arrival') => {
+    if (type === 'departure') {
+      setDeparture(address);
+      setSelectedDeparture(address);
+      setDepartureSuggestions([]);
+      
+      // Si l'arrivée est déjà sélectionnée, calculer le trajet
+      if (selectedArrival && address !== '') {
+        // Calculer immédiatement avec un délai pour la stabilité
+        setTimeout(() => {
+          calculateRoute();
+        }, 100);
+      }
+    } else {
+      setArrival(address);
+      setSelectedArrival(address);
+      setArrivalSuggestions([]);
+      
+      // Si le départ est déjà sélectionné, calculer le trajet
+      if (selectedDeparture && address !== '') {
+        // Calculer immédiatement avec un délai pour la stabilité
+        setTimeout(() => {
+          calculateRoute();
+        }, 100);
+      }
+    }
+  };
+
+  const calculateArrivalTime = (departureTime: string, duration: string): string => {
+    try {
+      // Convertir l'heure de départ en Date
+      const [hours, minutes] = departureTime.split(':').map(Number);
+      const departureDate = new Date();
+      departureDate.setHours(hours, minutes, 0, 0);
+
+      // Extraire les minutes de la durée (ex: "45 min")
+      const durationMinutes = parseInt(duration.split(' ')[0]);
+      
+      // Ajouter la durée à l'heure de départ
+      departureDate.setMinutes(departureDate.getMinutes() + durationMinutes);
+
+      // Formater l'heure d'arrivée
+      const arrivalHours = departureDate.getHours().toString().padStart(2, '0');
+      const arrivalMinutes = departureDate.getMinutes().toString().padStart(2, '0');
+      
+      return `${arrivalHours}:${arrivalMinutes}`;
+    } catch (error) {
+      console.error('Error calculating arrival time:', error);
+      return '--:--';
+    }
+  };
 
   const handleSubmit = () => {
-    if (validateForm()) {
-      // TODO: Implémenter la logique d'envoi du formulaire
-      console.log(formData);
+    setShowError(false);
+    setErrors({});
+    
+    // Vérifier les champs obligatoires
+    const isValid = validateForm();
+    if (!isValid) {
+      return;
+    }
+    
+    // Afficher la popup de confirmation
+    setIsPopupOpen(true);
+  };
+
+  const handleConfirmSubmit = async () => {
+    try {
+      setSubmitting(true);
+      
+      // Vérifier que le trajet est calculé
+      if (!routeInfo) {
+        throw new Error('Impossible de calculer le trajet');
+      }
+
+      // Nous n'avons besoin que de ces champs pour la création
+      const tripData = {
+        departure: selectedDeparture || departure,
+        arrival: selectedArrival || arrival,
+        date,
+        time,
+        availableSeats: parseInt(remainingSeats),
+        vehicle: vehicleType,
+        distance: routeInfo!.distance,
+        duration: routeInfo!.duration,
+        arrivalTime: calculateArrivalTime(time, routeInfo!.duration)  // Calculer l'heure d'arrivée
+      };
+
+      await tripService.createTrip(tripData);
+      setIsPopupOpen(false);
+      router.push('/trips');
+    } catch (error) {
+      console.error('Error creating trip:', error);
+      setErrorMessage(error instanceof Error ? error.message : 'Erreur lors de la création du trajet');
+      setShowError(true);
+      setIsPopupOpen(false);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -52,34 +284,84 @@ export default function AddTrip() {
           <TextInput
             label="Lieu de départ"
             value={departure}
-            onChange={setDeparture}
-            placeholder="Entrez le lieu de départ"
+            onChange={handleDepartureChange}
             error={errors.departure}
+            required={true}
           />
+          {departureSuggestions.length > 0 && (
+            <ul className="mt-2 space-y-1 bg-gray-50 rounded-lg">
+              {departureSuggestions.map(suggestion => (
+                <li 
+                  key={suggestion} 
+                  onClick={() => handleSelectAddress(suggestion, 'departure')}
+                  className="px-4 py-2 text-sm text-gray-800 hover:bg-blue-100 hover:text-blue-800 cursor-pointer rounded"
+                >
+                  {suggestion}
+                </li>
+              ))}
+            </ul>
+          )}
+
           <TextInput
             label="Lieu d'arrivée"
             value={arrival}
-            onChange={setArrival}
-            placeholder="Entrez le lieu d'arrivée"
+            onChange={handleArrivalChange}
             error={errors.arrival}
+            required={true}
           />
+          {arrivalSuggestions.length > 0 && (
+            <ul className="mt-2 space-y-1 bg-gray-50 rounded-lg">
+              {arrivalSuggestions.map(suggestion => (
+                <li 
+                  key={suggestion} 
+                  onClick={() => handleSelectAddress(suggestion, 'arrival')}
+                  className="px-4 py-2 text-sm text-gray-800 hover:bg-blue-100 hover:text-blue-800 cursor-pointer rounded"
+                >
+                  {suggestion}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Affichage des informations de trajet */}
+          {routeInfo && (
+            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-blue-800">
+                Distance: {routeInfo.distance}
+              </p>
+              <p className="text-sm text-blue-800">
+                Durée: {routeInfo.duration}
+              </p>
+            </div>
+          )}
+
+          {/* Affichage des erreurs */}
+          {showError && (
+            <div className="mt-2 p-2 bg-red-50 text-red-700 rounded-md">
+              {errorMessage}
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <TextInput
               label="Date"
               type="date"
               value={date}
-              onChange={setDate}
+              onChange={handleDateChange}
+              min={minDate}
               error={errors.date}
+              required
             />
             <TextInput
               label="Heure"
               type="time"
               value={time}
-              onChange={setTime}
+              onChange={handleTimeChange}
+              min={date === minDate ? minTime : undefined}
               error={errors.time}
+              required
             />
           </div>
-
           <VehicleSection
             vehicles={vehicles}
             selectedVehicle={selectedVehicle}
@@ -88,6 +370,7 @@ export default function AddTrip() {
             onVehicleChange={handleVehicleChange}
             onRemainingSeatsChange={setRemainingSeats}
             onVehicleTypeChange={setVehicleType}
+            loading={vehiclesLoading}
             errors={errors}
           />
 
@@ -95,12 +378,20 @@ export default function AddTrip() {
             <Button
               text="Valider"
               onClick={handleSubmit}
-              disabled={Object.keys(errors).length > 0}
+              disabled={!selectedDeparture || !selectedArrival || vehiclesLoading}
             />
           </div>
         </div>
       </div>
       <NavBar activePage="home" />
+
+      <PopUpConfirmation
+        isOpen={isPopupOpen}
+        message="Êtes-vous sûr de vouloir créer ce trajet ?"
+        onCancel={() => setIsPopupOpen(false)}
+        onAccept={handleConfirmSubmit}
+        loading={submitting}
+      />
     </div>
   );
-} 
+}

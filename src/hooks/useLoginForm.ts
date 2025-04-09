@@ -37,12 +37,21 @@ export const useLoginForm = () => {
     if (!validateForm()) return;
 
     try {
-      await authService.login({
+      const loginResponse = await authService.login({
         email: formState.email,
         password: formState.password,
       });
-      router.push("/home");
-    } catch (err) {
+      
+      // Récupérer l'utilisateur connecté et son rôle
+      const user = await authService.getCurrentUser();
+      
+      // Rediriger en fonction du rôle
+      if (user.role === 'admin_user') {
+        await router.push('/admin/statistiques');
+      } else {
+        await router.push('/home');
+      }
+    } catch (error) {
       setFormState((prev) => ({
         ...prev,
         infoMessage: "Une erreur est survenue lors de la connexion",

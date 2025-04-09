@@ -25,6 +25,8 @@ export const useTripFormValidation = (formData: TripFormData) => {
 
     if (!formData.remainingSeats) {
       newErrors.remainingSeats = "Le nombre de places est requis";
+    } else if (parseInt(formData.remainingSeats) < 1) {
+      newErrors.remainingSeats = "Le nombre de places doit être supérieur à 0";
     }
 
     setErrors(newErrors);
@@ -36,4 +38,4 @@ export const useTripFormValidation = (formData: TripFormData) => {
     validateForm,
     setErrors
   };
-}; 
+};
