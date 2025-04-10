@@ -1,9 +1,17 @@
 // API URLs
+<<<<<<< Updated upstream
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://laptop-omen-rvr';
 export const AUTH_BASE_URL = `${BASE_URL}:5001`;
 export const ADMIN_BASE_URL = `${BASE_URL}:5004`;
 export const API_BASE_URL = `${BASE_URL}:5002`;
 export const IO_URL = `${BASE_URL}:5003`;
+=======
+export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://parknco.freeboxos.fr';
+export const AUTH_BASE_URL = `${BASE_URL}:30050`;
+export const ADMIN_BASE_URL = `${BASE_URL}:30050`;
+export const API_BASE_URL = `${BASE_URL}:30050`;
+export const IO_URL = `${BASE_URL}:30050`;
+>>>>>>> Stashed changes
 export const OPENROUTE_API_URL = 'https://api.openrouteservice.org';
 
 // Les images sont servies depuis le service d'authentification
